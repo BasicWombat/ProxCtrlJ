@@ -1,5 +1,5 @@
 import javax.swing.*;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 
-public class SettingsDialog extends JDialog{
+public class SettingsDialog extends JFrame{
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Settings");

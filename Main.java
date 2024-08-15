@@ -1,11 +1,14 @@
 // import java.awt.event.*;
 import java.awt.*;
+
 import javax.swing.*;
+
 import java.io.FileInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.Properties;
-import javax.swing.SwingUtilities;
 
 public class Main {  
     private Properties properties;
@@ -33,8 +36,7 @@ public class Main {
             JLabel heading = new JLabel("ProxCtrlJ"); 
             heading.setBounds(50,10, 200,30);
             heading.setFont(new Font("Sans Serif", Font.BOLD, 28));
-            mainFrame.add(heading);
-
+            
             // Main Menu Bar
             JMenu fileItem, helpItem;
             JMenuItem connectItem, settingsItem, quitItem, aboutItem;
@@ -59,11 +61,11 @@ public class Main {
             // Settings Window
             settingsItem.addActionListener(e -> {
                 SwingUtilities.invokeLater(() -> {
-                    // Create an instance of SettingsDialog and make it visible
                     SettingsDialog settingsDialog = new SettingsDialog();
-                    settingsDialog.setVisible(true);
+                    settingsDialog.setVisible(true); 
                 });
             });
+
 
             // About Window
             aboutItem.addActionListener(e -> {
@@ -89,7 +91,7 @@ public class Main {
                 aboutWindow.add(authorLabel);
 
                 JButton closeBtn = new JButton("Close");
-                closeBtn.setBounds(50, 200, 100, 50);
+                closeBtn.setBounds(50, 200, 95, 30);
                 closeBtn.addActionListener(e2 -> aboutWindow.dispose());
                 aboutWindow.add(closeBtn);
 
@@ -103,8 +105,7 @@ public class Main {
             l1.setBounds(50, 50, 100, 30);
             JLabel l2 = new JLabel("Second Label.");
             l2.setBounds(50, 100, 100, 30);
-            mainFrame.add(l1);
-            mainFrame.add(l2);
+            
 
             // Field Example
             JTextField tf = new JTextField();
@@ -114,12 +115,30 @@ public class Main {
             JButton b = new JButton("Click Here");
             b.setBounds(50, 200, 95, 30);
             b.addActionListener(e -> tf.setText("Welcome to Javatpoint."));
-            mainFrame.add(b);
-            mainFrame.add(tf);
+
+            // Create a label to be used as a status bar
+            JLabel statusLabel = new JLabel("Ready");
+            statusLabel.setBorder(BorderFactory.createEtchedBorder());
+
+            // Create a panel to hold the status label
+            JPanel statusPanel = new JPanel(new BorderLayout());
+            statusPanel.add(statusLabel, BorderLayout.CENTER);
+            
+
+            // Main Window Objects
+            mainFrame.setLayout(new BorderLayout(20, 15));
+            mainFrame.add(heading, BorderLayout.NORTH);
+            
+            mainFrame.add(l1, BorderLayout.EAST);
+            mainFrame.add(l2, BorderLayout.EAST);
+
+            mainFrame.add(tf, BorderLayout.EAST);
+            mainFrame.add(b, BorderLayout.EAST);
+            mainFrame.add(statusPanel, BorderLayout.SOUTH);
 
             // Main Window Display
             mainFrame.setSize(800, 600);
-            mainFrame.setLayout(null);
+            
             mainFrame.setVisible(true);
         });
     }
