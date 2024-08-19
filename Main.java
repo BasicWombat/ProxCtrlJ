@@ -70,6 +70,8 @@ public class Main {
             DefaultMutableTreeNode green=new DefaultMutableTreeNode("green");  
             host1.add(red); host2.add(blue); host2.add(black); host2.add(green);      
             JTree jt=new JTree(cluster);
+            jt.setBounds (5, 50, 240, 545);
+            jt.setBorder(BorderFactory.createEtchedBorder());
 
 
             // Connect Window
@@ -118,7 +120,6 @@ public class Main {
                 });
             });
 
-
             // About Window
             aboutItem.addActionListener(e -> {
                 // Create a new JFrame for the About window
@@ -153,58 +154,52 @@ public class Main {
             // Quit Application from Menu
             quitItem.addActionListener(e -> System.exit(0));
 
+            //Tab Area
+            JTextArea ta=new JTextArea(200,200);
+            JPanel p1=new JPanel();
+            p1.add(ta);
+            JPanel p2=new JPanel();
+            JPanel p3=new JPanel();
+            JTabbedPane tp=new JTabbedPane();  
+            tp.setBounds(265,50,500,545);  
+            tp.add("main",p1);  
+            tp.add("visit",p2);  
+            tp.add("help",p3);    
+
             // Label Example
             JLabel l1 = new JLabel("First Label.");
-            l1.setBounds(50, 50, 100, 30);
+            l1.setBounds(260, 50, 100, 30);
             JLabel l2 = new JLabel("Second Label.");
-            l2.setBounds(50, 100, 100, 30);
-            JLabel epLabel = new JLabel("East Panel Label");
-            epLabel.setBounds(50, 50, 100, 30);
-            
+            l2.setBounds(260, 100, 100, 30);
+         
 
             // Field Example
             JTextField tf = new JTextField();
-            tf.setBounds(50, 150, 150, 20);
+            tf.setBounds(260, 150, 150, 20);
 
             // Button Example
             JButton b = new JButton("Click Here");
-            b.setBounds(50, 200, 95, 30);
+            b.setBounds(260, 200, 95, 30);
             b.addActionListener(e -> tf.setText("Welcome to Javatpoint."));
 
             // Create a label to be used as a status bar
             JLabel statusLabel = new JLabel(mainApp.getProperty("status.connectionStatus"));
             statusLabel.setBorder(BorderFactory.createEtchedBorder());
+            
 
             // Create a panel to hold the status label
-            JPanel statusPanel = new JPanel(new BorderLayout());
-            statusPanel.add(statusLabel, BorderLayout.CENTER);
-            
-            // EAST Panel
-            JPanel ePanel=new JPanel();
-            ePanel.setBackground(Color.GRAY);
-            ePanel.add(epLabel);
-            
-
-            // Center Panel
-            JPanel cPanel=new JPanel();
-            cPanel.setBackground(Color.LIGHT_GRAY);
-            cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
-
-            cPanel.add(l1, BorderLayout.CENTER);
-            cPanel.add(l2, BorderLayout.CENTER);
-
-            cPanel.add(tf, BorderLayout.CENTER);
-            cPanel.add(b, BorderLayout.CENTER);
-
+            JPanel statusPanel = new JPanel();
+            statusPanel.add(statusLabel);
+            statusPanel.setBounds(0, 600, 1024, 30);
+ 
             // Main Window Objects
-            mainFrame.setLayout(new BorderLayout(20, 15));
-            mainFrame.add(heading, BorderLayout.NORTH);
+            mainFrame.setLayout(null);
+            mainFrame.add(heading);
 
-            mainFrame.add(jt, BorderLayout.WEST);
-            mainFrame.add(cPanel, BorderLayout.CENTER);
-            mainFrame.add(ePanel, BorderLayout.EAST);
+            mainFrame.add(jt);
+            mainFrame.add(tp);
             
-            mainFrame.add(statusPanel,  BorderLayout.SOUTH);
+            mainFrame.add(statusPanel);
 
             // Main Window Display
             mainFrame.setSize(1024, 768);

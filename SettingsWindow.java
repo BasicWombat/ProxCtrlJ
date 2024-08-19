@@ -9,96 +9,84 @@ import java.util.Properties;
 public class SettingsWindow extends JFrame {
 
     private JTextArea propertiesTextArea;
+    private JLabel headingLbl;
+    private JLabel hostaddrLbl;
+    private JLabel hostprtLbl;
+    private JLabel apiTokenLbl;
+    private JLabel apiKeyLbl;
+    private JTextField apiKeyFld;
+    private JButton saveBtn;
+    private JButton clearBtn;
+    private JLabel propertiesLbl;
+    private JTextField apiTokenFld;
+    private JTextField hostprtFld;
+    private JTextField hostaddrFld;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(SettingsWindow::new);
     }
 
     public SettingsWindow() {
-        // Set up the frame
         setTitle("Settings");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        //adjust size and set layout
         setSize(600, 400);
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        setPreferredSize (new Dimension (580, 382));
+        setLayout (null);
 
-        // Create labels and text fields
-        JLabel titleLabel = new JLabel("Settings");
-        titleLabel.setFont(new Font("Sans Serif", Font.BOLD, 20));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        add(titleLabel, gbc);
-        
-        gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.WEST;
+        //construct components
+        headingLbl = new JLabel ("Settings");
+        hostaddrLbl = new JLabel ("Host Address:");
+        hostprtLbl = new JLabel ("Host Port:");
+        apiTokenLbl = new JLabel ("API Token:");
+        apiKeyLbl = new JLabel ("API Key:");
+        apiKeyFld = new JTextField (5);
+        saveBtn = new JButton ("Save");
+        clearBtn = new JButton ("Clear");
+        propertiesTextArea = new JTextArea (5, 5);
+        propertiesLbl = new JLabel ("Current Settings");
+        apiTokenFld = new JTextField (5);
+        hostprtFld = new JTextField (5);
+        hostaddrFld = new JTextField (5);
 
-        JLabel hostaddrLbl = new JLabel("Host Address:");
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        add(hostaddrLbl, gbc);
-        
-        JTextField hostaddrFld = new JTextField(15);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        add(hostaddrFld, gbc);
+        //add components
+        add (headingLbl);
+        add (hostaddrLbl);
+        add (hostprtLbl);
+        add (apiTokenLbl);
+        add (apiKeyLbl);
+        add (apiKeyFld);
+        add (saveBtn);
+        add (clearBtn);
+        add (propertiesTextArea);
+        add (propertiesLbl);
+        add (apiTokenFld);
+        add (hostprtFld);
+        add (hostaddrFld);
 
-        JLabel hostportLbl = new JLabel("Host Port:");
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        add(hostportLbl, gbc);
-        
-        JTextField hostportFld = new JTextField(15);
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        add(hostportFld, gbc);
-
-        JLabel apitknLbl = new JLabel("API Token:");
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        add(apitknLbl, gbc);
-        
-        JTextField apitknFld = new JTextField(15);
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        add(apitknFld, gbc);
-
-        JLabel apikeyLbl = new JLabel("API Key:");
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        add(apikeyLbl, gbc);
-        
-        JTextField apikeyFld = new JTextField(15);
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        add(apikeyFld, gbc);
-
-        JButton saveButton = new JButton("Save");
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        add(saveButton, gbc);
-
-        // Text area to display settings.properties content
-        propertiesTextArea = new JTextArea(10, 25);
-        propertiesTextArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(propertiesTextArea);
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        gbc.gridheight = 6;
-        gbc.fill = GridBagConstraints.BOTH;  // Ensure it fills the available space
-        add(scrollPane, gbc);
+        //set component bounds (only needed by Absolute Positioning)
+        headingLbl.setBounds (35, 25, 100, 25);
+        hostaddrLbl.setBounds (40, 75, 100, 25);
+        hostprtLbl.setBounds (40, 105, 100, 25);
+        apiTokenLbl.setBounds (40, 135, 100, 25);
+        apiKeyLbl.setBounds (40, 165, 100, 25);
+        apiKeyFld.setBounds (135, 165, 195, 25);
+        saveBtn.setBounds (450, 335, 100, 25);
+        clearBtn.setBounds (340, 335, 100, 25);
+        propertiesTextArea.setBounds (370, 75, 185, 120);
+        propertiesLbl.setBounds (370, 45, 100, 25);
+        apiTokenFld.setBounds (135, 135, 195, 25);
+        hostprtFld.setBounds (135, 105, 195, 25);
+        hostaddrFld.setBounds (135, 75, 195, 25);
 
         // Load the properties file content into the text area
         loadSettingsFromFile();
 
         // Action listener for the save button
-        saveButton.addActionListener((ActionEvent e) -> {
-            saveSettingsToFile(hostaddrFld.getText(), hostportFld.getText(), apitknFld.getText(), apikeyFld.getText());
+        saveBtn.addActionListener((ActionEvent e) -> {
+            saveSettingsToFile(hostaddrFld.getText(), hostprtFld.getText(), apiTokenFld.getText(), apiKeyFld.getText());
             loadSettingsFromFile(); // Reload the properties file content after saving
         });
 
