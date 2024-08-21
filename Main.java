@@ -1,7 +1,5 @@
 //import java.awt.event.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -28,8 +26,7 @@ public class Main {
 
     public static void main(String[] args) {
             Main mainApp = new Main("app.properties");
-            Main mainSets = new Main("settings.properties");
-            Main mainStatus = new Main("status.properties");
+            //Main mainSets = new Main("settings.properties");
 
             // Main Window Configuration
             JFrame mainFrame = new JFrame("ProxCtrlJ");
@@ -38,25 +35,37 @@ public class Main {
             heading.setFont(new Font("Sans Serif", Font.BOLD, 28));
             
             // Main Menu Bar
-            JMenu fileItem, helpItem;
-            JMenuItem connectItem, settingsItem, quitItem, aboutItem;
+            JMenu fileItem, createItem, helpItem;
+            JMenuItem connectItem, disconnectItem, settingsItem, createvmItem, createctItem, quitItem, aboutItem;
             JMenuBar mb = new JMenuBar();
+            
+            // File Menu
             fileItem = new JMenu("File");
-            helpItem = new JMenu("Help");
             connectItem = new JMenuItem("Connect");
+            disconnectItem = new JMenuItem("Disconnect");
             settingsItem = new JMenuItem("Settings");
             quitItem = new JMenuItem("Quit");
-            aboutItem = new JMenuItem("About");
             fileItem.add(connectItem);
+            fileItem.add(disconnectItem);
             fileItem.add(settingsItem);
             fileItem.add(quitItem);
-            helpItem.add(aboutItem);
             mb.add(fileItem);
-            mb.add(helpItem);
-            mainFrame.setJMenuBar(mb);
 
-            // Connect Action (Uncomment and implement as needed)
-            // connect.addActionListener(e -> { /* Connect logic */ });
+            //Create Menu
+            createItem = new JMenu("Create");
+            createvmItem = new JMenuItem("Create VM");
+            createctItem = new JMenuItem("Create CT");
+            createItem.add(createvmItem);
+            createItem.add(createctItem);
+            mb.add(createItem);
+
+            //Help Menu
+            helpItem = new JMenu("Help");
+            aboutItem = new JMenuItem("About");
+            helpItem.add(aboutItem);
+            mb.add(helpItem);
+
+            mainFrame.setJMenuBar(mb);
 
             // Server Tree View
             DefaultMutableTreeNode cluster=new DefaultMutableTreeNode("Cluster");  
@@ -75,41 +84,12 @@ public class Main {
 
 
             // Connect Window
+            // This is probably a waste of time considering what I've learnt about the API connectivity :(
+            // Confirmed via ChatGPT that for software that make frequent API requests, you can establish
+            // a persistent connection.
+            // TODO: Create class to handle API Connections
             connectItem.addActionListener(e -> {
-
-                // Create a new JFrame for the Connect window
-                JFrame connectWindow = new JFrame("Connect");
-                connectWindow.setSize(400, 200);
-                connectWindow.setLocationRelativeTo(mainFrame);
-                connectWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                connectWindow.setLayout(null);
-
-                JLabel titleLabel = new JLabel("Host Connect");
-                titleLabel.setBounds(20, 10, 200, 30);
-                titleLabel.setFont(new Font("Sans Serif", Font.BOLD, 28));
-
-                JLabel hostLabel = new JLabel("Current Host: "+ mainSets.getProperty("host"));
-                hostLabel.setBounds(20, 60, 300, 30);
-                hostLabel.setToolTipText("Host Address can be changes in Settings");
-                
-                JButton connectBtn = new JButton("Connect");
-                connectBtn.setBounds(20, 100, 95, 30);
-                connectBtn.addActionListener(new ActionListener(){
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // Show a simple dialog when the button is clicked
-                        JOptionPane.showMessageDialog(connectWindow, "Connect! (Maybe)", "Connect!", JOptionPane.INFORMATION_MESSAGE);
-                        //TODO - Set Status Bar Status
-                        connectWindow.dispose();
-                    }
-                });
-                
-                connectWindow.add(titleLabel);
-                connectWindow.add(hostLabel);
-                connectWindow.add(connectBtn);
-                connectWindow.setVisible(true);
-
-                
+                new ConnectWdw();
             });
 
             // Settings Window
@@ -122,35 +102,21 @@ public class Main {
 
             // About Window
             aboutItem.addActionListener(e -> {
-                // Create a new JFrame for the About window
-                JFrame aboutWindow = new JFrame("About");
-                aboutWindow.setSize(600, 400);
-                aboutWindow.setLocationRelativeTo(mainFrame);
-                aboutWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                aboutWindow.setLayout(null);
-
-                // Add labels with property information
-                JLabel titleLabel = new JLabel("ProxCtrlJ");
-                titleLabel.setBounds(50, 10, 200, 30);
-                titleLabel.setFont(new Font("Sans Serif", Font.BOLD, 28));
-                aboutWindow.add(titleLabel);
-
-                JLabel versionLabel = new JLabel("Version: " + mainApp.getProperty("app.version"));
-                versionLabel.setBounds(50, 60, 300, 30);
-                aboutWindow.add(versionLabel);
-
-                JLabel authorLabel = new JLabel("Author: " + mainApp.getProperty("app.author"));
-                authorLabel.setBounds(50, 100, 300, 30);
-                aboutWindow.add(authorLabel);
-
-                JButton closeBtn = new JButton("Close");
-                closeBtn.setBounds(50, 200, 95, 30);
-                closeBtn.addActionListener(e2 -> aboutWindow.dispose());
-                aboutWindow.add(closeBtn);
-
-                aboutWindow.setVisible(true);
+                new AboutWdw();
             });
             
+            createvmItem.addActionListener(e -> {
+                JOptionPane.showMessageDialog(mainFrame,"Created New VM!");  
+            });
+
+            createctItem.addActionListener(e -> {
+                JOptionPane.showMessageDialog(mainFrame,"Created New CT!");  
+            });
+
+            disconnectItem.addActionListener(e -> {
+                JOptionPane.showMessageDialog(mainFrame,"Disconnected!");  
+            });
+
             // Quit Application from Menu
             quitItem.addActionListener(e -> System.exit(0));
 
@@ -186,20 +152,12 @@ public class Main {
             JLabel statusLabel = new JLabel(mainApp.getProperty("status.connectionStatus"));
             statusLabel.setBorder(BorderFactory.createEtchedBorder());
             
-
-            // Create a panel to hold the status label
-            JPanel statusPanel = new JPanel();
-            statusPanel.add(statusLabel);
-            statusPanel.setBounds(0, 600, 1024, 30);
- 
             // Main Window Objects
             mainFrame.setLayout(null);
             mainFrame.add(heading);
 
             mainFrame.add(jt);
             mainFrame.add(tp);
-            
-            mainFrame.add(statusPanel);
 
             // Main Window Display
             mainFrame.setSize(1024, 768);
