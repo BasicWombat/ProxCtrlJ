@@ -9,6 +9,10 @@ ProxCtrlJ is a personal project aimed at creating a cross-platform Java applicat
 - **Comprehensive Functionality**: Perform all tasks available in the Proxmox Web UI, including managing clusters, nodes, virtual machines, containers, and more.
 - **User-Friendly Interface**: Designed with a focus on usability, making it easy to manage your Proxmox infrastructure without needing to rely on a web browser.
 
+## Screenshot (v0.2)
+
+![Screenshot of ProxCtrlJ v0.2.](/assets/images/ProxCtrlJ_02.png)
+
 ## Installation
 
 To run ProxCtrlJ, you will need to have the following prerequisites:
