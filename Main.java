@@ -1,8 +1,8 @@
-//import java.awt.event.*;
+import java.awt.event.*;
 import java.awt.*;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.*;
 
 import java.io.*;
 import java.util.Properties;
@@ -68,20 +68,30 @@ public class Main {
             mainFrame.setJMenuBar(mb);
 
             // Server Tree View
-            DefaultMutableTreeNode cluster=new DefaultMutableTreeNode("Cluster");  
-            DefaultMutableTreeNode host1=new DefaultMutableTreeNode("Host1");
-            DefaultMutableTreeNode host2=new DefaultMutableTreeNode("Host2");  
-            cluster.add(host1);  
-            cluster.add(host2);  
-            DefaultMutableTreeNode red=new DefaultMutableTreeNode("red");  
-            DefaultMutableTreeNode blue=new DefaultMutableTreeNode("blue");  
-            DefaultMutableTreeNode black=new DefaultMutableTreeNode("black");  
-            DefaultMutableTreeNode green=new DefaultMutableTreeNode("green");  
-            host1.add(red); host2.add(blue); host2.add(black); host2.add(green);      
-            JTree jt=new JTree(cluster);
+            // Instantiate ProxmoxTree and get the tree model
+            ProxmoxTree proxmoxTree = new ProxmoxTree();
+            DefaultTreeModel proxTree = proxmoxTree.getProxmoxTreeModel();  
+            JTree jt=new JTree(proxTree);
             jt.setBounds (5, 50, 240, 545);
             jt.setBorder(BorderFactory.createEtchedBorder());
-
+                    // Add a mouse listener to handle double-clicks
+            jt.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) {  // Check for double-click
+                        TreePath path = jt.getPathForLocation(e.getX(), e.getY());
+                        if (path != null) {
+                            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                            String nodeInfo = node.getUserObject().toString();
+                            
+                            // Open a new window when a node is double-clicked
+                            JFrame newWindow = new JFrame("New Window - " + nodeInfo);
+                            newWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            newWindow.setSize(300, 200);
+                            newWindow.setVisible(true);
+                        }
+                    }
+                }
+            });
 
             // Connect Window
             // This is probably a waste of time considering what I've learnt about the API connectivity :(
@@ -121,16 +131,30 @@ public class Main {
             quitItem.addActionListener(e -> System.exit(0));
 
             //Tab Area
-            JTextArea ta=new JTextArea(200,200);
+
+            //Panel 1: Node Status
             JPanel p1=new JPanel();
-            p1.add(ta);
+            JLabel authorLabel = new JLabel("Server: This is where stupid server infor will go!");
+            p1.add(authorLabel);
+
+            //Panel 2: Main
+            JTextArea ta=new JTextArea(200,200);
             JPanel p2=new JPanel();
+            p2.add(ta);
+
+            //Panel 3: Visit
             JPanel p3=new JPanel();
+
+            //Panel 4: Help
+            JPanel p4=new JPanel();
+
+            // Tabs are here!
             JTabbedPane tp=new JTabbedPane();  
             tp.setBounds(265,50,500,545);  
-            tp.add("main",p1);  
-            tp.add("visit",p2);  
-            tp.add("help",p3);    
+            tp.add("Node Status",p1);
+            tp.add("main",p2);  
+            tp.add("visit",p3);  
+            tp.add("help",p4);    
 
             // Label Example
             JLabel l1 = new JLabel("First Label.");
@@ -155,7 +179,7 @@ public class Main {
             // Main Window Objects
             mainFrame.setLayout(null);
             mainFrame.add(heading);
-
+            
             mainFrame.add(jt);
             mainFrame.add(tp);
 

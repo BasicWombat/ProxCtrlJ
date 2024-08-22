@@ -12,13 +12,13 @@ public class SettingsWindow extends JFrame {
     private JLabel headingLbl;
     private JLabel hostaddrLbl;
     private JLabel hostprtLbl;
-    private JLabel apiTokenLbl;
-    private JLabel apiKeyLbl;
-    private JTextField apiKeyFld;
+    private JLabel apiTokenIDLbl;
+    private JLabel apiSecretLbl;
+    private JTextField apiSecretFld;
     private JButton saveBtn;
     private JButton clearBtn;
     private JLabel propertiesLbl;
-    private JTextField apiTokenFld;
+    private JTextField apiTokenIDFld;
     private JTextField hostprtFld;
     private JTextField hostaddrFld;
 
@@ -40,14 +40,14 @@ public class SettingsWindow extends JFrame {
         headingLbl = new JLabel ("Settings");
         hostaddrLbl = new JLabel ("Host Address:");
         hostprtLbl = new JLabel ("Host Port:");
-        apiTokenLbl = new JLabel ("API Token:");
-        apiKeyLbl = new JLabel ("API Key:");
-        apiKeyFld = new JTextField (5);
+        apiTokenIDLbl = new JLabel ("API Token ID:");
+        apiSecretLbl = new JLabel ("API Secret:");
+        apiSecretFld = new JTextField (5);
         saveBtn = new JButton ("Save");
         clearBtn = new JButton ("Clear");
         propertiesTextArea = new JTextArea (5, 5);
         propertiesLbl = new JLabel ("Current Settings");
-        apiTokenFld = new JTextField (5);
+        apiTokenIDFld = new JTextField (5);
         hostprtFld = new JTextField (5);
         hostaddrFld = new JTextField (5);
 
@@ -55,14 +55,14 @@ public class SettingsWindow extends JFrame {
         add (headingLbl);
         add (hostaddrLbl);
         add (hostprtLbl);
-        add (apiTokenLbl);
-        add (apiKeyLbl);
-        add (apiKeyFld);
+        add (apiTokenIDLbl);
+        add (apiSecretLbl);
+        add (apiSecretFld);
         add (saveBtn);
         add (clearBtn);
         add (propertiesTextArea);
         add (propertiesLbl);
-        add (apiTokenFld);
+        add (apiTokenIDFld);
         add (hostprtFld);
         add (hostaddrFld);
 
@@ -70,14 +70,14 @@ public class SettingsWindow extends JFrame {
         headingLbl.setBounds (35, 25, 100, 25);
         hostaddrLbl.setBounds (40, 75, 100, 25);
         hostprtLbl.setBounds (40, 105, 100, 25);
-        apiTokenLbl.setBounds (40, 135, 100, 25);
-        apiKeyLbl.setBounds (40, 165, 100, 25);
-        apiKeyFld.setBounds (135, 165, 195, 25);
+        apiTokenIDLbl.setBounds (40, 135, 100, 25);
+        apiSecretLbl.setBounds (40, 165, 100, 25);
+        apiSecretFld.setBounds (135, 165, 195, 25);
         saveBtn.setBounds (450, 335, 100, 25);
         clearBtn.setBounds (340, 335, 100, 25);
         propertiesTextArea.setBounds (370, 75, 185, 120);
         propertiesLbl.setBounds (370, 45, 100, 25);
-        apiTokenFld.setBounds (135, 135, 195, 25);
+        apiTokenIDFld.setBounds (135, 135, 195, 25);
         hostprtFld.setBounds (135, 105, 195, 25);
         hostaddrFld.setBounds (135, 75, 195, 25);
 
@@ -86,7 +86,7 @@ public class SettingsWindow extends JFrame {
 
         // Action listener for the save button
         saveBtn.addActionListener((ActionEvent e) -> {
-            saveSettingsToFile(hostaddrFld.getText(), hostprtFld.getText(), apiTokenFld.getText(), apiKeyFld.getText());
+            saveSettingsToFile(hostaddrFld.getText(), hostprtFld.getText(), apiTokenIDFld.getText(), apiSecretFld.getText());
             loadSettingsFromFile(); // Reload the properties file content after saving
         });
 
@@ -94,12 +94,12 @@ public class SettingsWindow extends JFrame {
         setVisible(true);
     }
 
-    private void saveSettingsToFile(String host, String hostport, String apitoken, String apikey) {
+    private void saveSettingsToFile(String host, String hostport, String apiTokenID, String apiSecret) {
         Properties properties = new Properties();
         properties.setProperty("host", host);
         properties.setProperty("hostport", hostport);
-        properties.setProperty("apitoken", apitoken);
-        properties.setProperty("apikey", apikey);
+        properties.setProperty("apiTokenID", apiTokenID);
+        properties.setProperty("apiSecret", apiSecret);
 
         try (FileOutputStream out = new FileOutputStream("settings.properties")) {
             properties.store(out, "User Settings");

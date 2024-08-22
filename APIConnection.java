@@ -1,27 +1,32 @@
-import org.apache.httpcomponents.client5.*;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.util.Timeout;
-import com.fasterxml.jackson.core.*;
+import org.apache.hc.core5.util.TimeValue;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public class ProxmoxAPIConnection {
+public class APIConnection {
 
     private static final String BASE_URL = "https://proxmox.example.com:8006/api2/json/";
     private final CloseableHttpClient httpClient;
     private final String authToken;
 
-    public ProxmoxAPIConnection(String authToken) {
+    public APIConnection(String authToken) {
         this.authToken = authToken;
+
         this.httpClient = HttpClients.custom()
-                .setConnectionTimeToLive(30, java.util.concurrent.TimeUnit.SECONDS)
-                .build();
+            .setConnectionManager(
+                PoolingHttpClientConnectionManagerBuilder.create()
+                    .setConnectionTimeToLive(TimeValue.ofSeconds(30)) // Time to live setting
+                    .build())
+            .build();
     }
 
     /**
@@ -30,8 +35,9 @@ public class ProxmoxAPIConnection {
      * @param endpoint The API endpoint to call (relative to BASE_URL).
      * @return The API response as a JsonNode.
      * @throws IOException If an I/O error occurs.
+     * @throws ParseException 
      */
-    public JsonNode makeGetRequest(String endpoint) throws IOException {
+    public static JsonNode makeGetRequest(String endpoint) throws IOException, ParseException {
         String url = BASE_URL + endpoint;
         HttpGet request = new HttpGet(url);
         request.setHeader("Authorization", "PVEAPIToken=" + authToken);
@@ -61,14 +67,14 @@ public class ProxmoxAPIConnection {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         // Example usage of the ProxmoxAPIConnection class
         String apiToken = "user@pam:12345-myapitoken-67890"; // Replace with your actual API token
-        ProxmoxAPIConnection proxmoxAPIConnection = new ProxmoxAPIConnection(apiToken);
+        APIConnection proxmoxAPIConnection = new APIConnection(apiToken);
 
         try {
             // Example: Get a list of VMs on a specific node
-            JsonNode response = proxmoxAPIConnection.makeGetRequest("nodes/your-node-name/qemu");
+            JsonNode response = APIConnection.makeGetRequest("nodes/your-node-name/qemu");
             System.out.println(response.toPrettyString());
 
             // Perform additional API requests as needed...
