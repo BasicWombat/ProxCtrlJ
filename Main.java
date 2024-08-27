@@ -10,6 +10,8 @@ import java.util.Properties;
 public class Main {  
     private Properties properties;
 
+
+
     public Main(String propertiesFilePath) {
         // Load properties
         properties = new Properties();
@@ -38,7 +40,7 @@ public class Main {
             JMenu fileItem, createItem, helpItem;
             JMenuItem connectItem, disconnectItem, settingsItem, createvmItem, createctItem, quitItem, aboutItem;
             JMenuBar mb = new JMenuBar();
-            
+
             // File Menu
             fileItem = new JMenu("File");
             connectItem = new JMenuItem("Connect");
@@ -104,10 +106,7 @@ public class Main {
 
             // Settings Window
             settingsItem.addActionListener(e -> {
-                SwingUtilities.invokeLater(() -> {
-                    SettingsWindow settingsWdw = new SettingsWindow();
-                    settingsWdw.setVisible(true);
-                });
+                new SettingsWindow();
             });
 
             // About Window
@@ -116,11 +115,11 @@ public class Main {
             });
             
             createvmItem.addActionListener(e -> {
-                JOptionPane.showMessageDialog(mainFrame,"Created New VM!");  
+                new createVM();
             });
 
             createctItem.addActionListener(e -> {
-                JOptionPane.showMessageDialog(mainFrame,"Created New CT!");  
+                new createCT();
             });
 
             disconnectItem.addActionListener(e -> {
@@ -134,7 +133,7 @@ public class Main {
 
             //Panel 1: Node Status
             JPanel p1=new JPanel();
-            JLabel authorLabel = new JLabel("Server: This is where stupid server infor will go!");
+            JLabel authorLabel = new JLabel("Server: This is where stupid server info will go!");
             p1.add(authorLabel);
 
             //Panel 2: Main
@@ -184,9 +183,12 @@ public class Main {
             mainFrame.add(tp);
 
             // Main Window Display
+            Image icon = Toolkit.getDefaultToolkit().getImage("assets/images/ProxCtrlJ_logo.png");
+            mainFrame.setIconImage(icon);
             mainFrame.setSize(1024, 768);
             mainFrame.setLocationRelativeTo(null);
             
             mainFrame.setVisible(true);
     }
+
 }

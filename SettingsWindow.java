@@ -29,7 +29,7 @@ public class SettingsWindow extends JFrame {
     public SettingsWindow() {
         setTitle("Settings");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(getParent());
 
         //adjust size and set layout
         setSize(600, 400);

@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
+
 public class ProxmoxTree {
 
     public DefaultTreeModel getProxmoxTreeModel() {
@@ -20,11 +22,16 @@ public class ProxmoxTree {
     private DefaultTreeModel fetchProxmoxTreeModel() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Proxmox Clusters");
         
-        String authToken = "daniel@pve!javatest=74d17a7b-5982-451c-b090-464a6af750be";
+        String apiTokenID = ConfigManager.getApiTokenID();
+        String apiSecret = ConfigManager.getApiSecret();
+        String host = ConfigManager.getHost();
+        String hostPort = ConfigManager.getHostPort();
+        
+        String authToken = apiTokenID + "=" + apiSecret;
+        String urlString = "https://" + host + ":" + hostPort+ "/api2/json/nodes/";
 
         try {
-            // Example URL to get nodes, replace with your actual Proxmox API endpoint
-            String urlString = "https://proxrig.burroweslab.net:8006/api2/json/nodes/";
+
             HttpURLConnection conn = (HttpURLConnection) new URL(urlString).openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Authorization", "PVEAPIToken=" + authToken);
@@ -47,7 +54,7 @@ public class ProxmoxTree {
 
                 // Get VMs for each node
                 String nodeName = node.getString("node");
-                String vmUrl = "https://proxrig.burroweslab.net:8006/api2/json/nodes/" + nodeName + "/qemu";
+                String vmUrl = urlString + nodeName + "/qemu";
                 HttpURLConnection vmConn = (HttpURLConnection) new URL(vmUrl).openConnection();
                 vmConn.setRequestMethod("GET");
                 vmConn.setRequestProperty("Authorization", "PVEAPIToken=" + authToken);

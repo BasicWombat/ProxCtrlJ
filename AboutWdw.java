@@ -1,17 +1,20 @@
+import java.awt.*;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import java.awt.Font;
 
-public class AboutWdw {
+
+
+public class AboutWdw extends Canvas{
     // Create a new JFrame for the About window
     JFrame AboutWdw = new JFrame("About");
     Main mainApp = new Main("app.properties");
     AboutWdw(){
     AboutWdw.setSize(600, 400);
-    //AboutWdw.setLocationRelativeTo(mainFrame);
+    AboutWdw.setLocationRelativeTo(getParent());
     AboutWdw.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     AboutWdw.setLayout(null);
+
 
     // Add labels with property information
     JLabel titleLabel = new JLabel("ProxCtrlJ");
