@@ -1,64 +1,135 @@
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.io.entity.StringEntity;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Properties;
 
 public class APIClient {
-    private static final String PROXMOX_API_URL = "https://your-proxmox-server:8006/api2/json/";
-    private String csrfToken;
-    private String authTicket;
+    private String host;
+    private String hostPort;
+    private String apiTokenID;
+    private String apiSecret;
+    private String node;
 
-    public void authenticate(String username, String password) throws IOException {
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpPost httpPost = new HttpPost(PROXMOX_API_URL + "access/ticket");
+    public APIClient() {
+        loadSettings();
+    }
 
-            Map<String, String> credentials = new HashMap<>();
-            credentials.put("username", username);
-            credentials.put("password", password);
+    private void loadSettings() {
+        Properties properties = new Properties();
+        try (FileInputStream fis = new FileInputStream("settings.properties")) {
+            properties.load(fis);
+            host = properties.getProperty("host");
+            hostPort = properties.getProperty("hostport");
+            apiTokenID = properties.getProperty("apiTokenID");
+            apiSecret = properties.getProperty("apiSecret");
+            node = properties.getProperty("node");
 
-            StringEntity entity = new StringEntity(new ObjectMapper().writeValueAsString(credentials));
-            httpPost.setEntity(entity);
-            httpPost.setHeader("Content-type", "application/json");
-
-            try (CloseableHttpResponse response = client.execute(httpPost)) {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode responseJson = mapper.readTree(response.getEntity().getContent());
-
-                // Extract CSRF Token and Auth Ticket
-                this.csrfToken = responseJson.path("data").path("CSRFPreventionToken").asText();
-                this.authTicket = responseJson.path("data").path("ticket").asText();
+            if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
+                showErrorDialog("Missing API settings in settings.properties. The program will continue running, but some features may not work correctly.");
             }
+        } catch (IOException e) {
+            showErrorDialog("Failed to load settings: " + e.getMessage());
         }
     }
 
-    public void getVirtualMachines() throws IOException {
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpGet httpGet = new HttpGet(PROXMOX_API_URL + "nodes/your-node-name/qemu");
+    private void showErrorDialog(String message) {
+        JOptionPane optionPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+        JDialog dialog = optionPane.createDialog("Error");
+        dialog.setAlwaysOnTop(true);
+        dialog.setVisible(true);
+    }
 
-            httpGet.setHeader("CSRFPreventionToken", csrfToken);
-            httpGet.setHeader("Cookie", "PVEAuthCookie=" + authTicket);
-
-            try (CloseableHttpResponse response = client.execute(httpGet)) {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode responseJson = mapper.readTree(response.getEntity().getContent());
-                System.out.println(responseJson.toPrettyString());
-            }
+    HttpURLConnection createConnection(String endpoint, String method) throws IOException {
+        try {
+            String urlString = "https://" + host + ":" + hostPort + endpoint;
+            URI uri = new URI(urlString);
+            URL url = uri.toURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod(method);
+            connection.setRequestProperty("Authorization", "PVEAPIToken=" + apiTokenID + "=" + apiSecret);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+            return connection;
+        } catch (URISyntaxException e) {
+            showErrorDialog("Invalid URL syntax: " + e.getMessage());
+            throw new IOException("Invalid URL syntax: " + e.getMessage(), e);
         }
     }
 
-    public String getCsrfToken() {
-        return csrfToken;
+    public String readData(String endpoint) {
+        if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
+            showErrorDialog("API settings are missing. Cannot perform the request.");
+            return null;
+        }
+
+        HttpURLConnection connection = null;
+        BufferedReader reader = null;
+        try {
+            connection = createConnection(endpoint, "GET");
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Read the response from the input stream
+                System.out.println("Reading Data...");
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                    System.out.println(line);
+                }
+                return response.toString(); // Return the JSON response
+            } else {
+                showErrorDialog("Failed to read data: HTTP error code " + responseCode);
+            }
+        } catch (IOException e) {
+            showErrorDialog("Failed to connect to Proxmox API: " + e.getMessage());
+        } finally {
+            // Ensure the reader and connection are closed properly
+            try {
+                if (reader != null) reader.close();
+                if (connection != null) connection.disconnect();
+            } catch (IOException e) {
+                showErrorDialog("Failed to close resources: " + e.getMessage());
+            }
+        }
+        return null;
     }
 
-    public String getAuthTicket() {
-        return authTicket;
+    public void writeData(String endpoint, String jsonPayload) {
+        if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
+            showErrorDialog("API settings are missing. Cannot perform the request.");
+            return;
+        }
+
+        try {
+            HttpURLConnection connection = createConnection(endpoint, "POST");
+            connection.getOutputStream().write(jsonPayload.getBytes());
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Code to handle successful write
+            } else {
+                showErrorDialog("Failed to write data: HTTP error code " + responseCode);
+            }
+        } catch (IOException e) {
+            showErrorDialog("Failed to connect to Proxmox API: " + e.getMessage());
+        }
+    }
+
+    public void disconnect() {
+        // Clear the stored credentials or invalidate the session
+        apiTokenID = null;
+        apiSecret = null;
+        host = null;
+        hostPort = null;
+        node = null;
+        showErrorDialog("Disconnected from Proxmox API.");
     }
 }

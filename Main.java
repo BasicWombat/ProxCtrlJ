@@ -10,8 +10,6 @@ import java.util.Properties;
 public class Main {  
     private Properties properties;
 
-
-
     public Main(String propertiesFilePath) {
         // Load properties
         properties = new Properties();
@@ -28,7 +26,9 @@ public class Main {
 
     public static void main(String[] args) {
             Main mainApp = new Main("app.properties");
-            //Main mainSets = new Main("settings.properties");
+            APIClient apiclient = new APIClient();
+            //APIClient client = new APIClient();
+            Main propSettings = new Main("settings.properties");
 
             // Main Window Configuration
             JFrame mainFrame = new JFrame("ProxCtrlJ");
@@ -37,12 +37,13 @@ public class Main {
             heading.setFont(new Font("Sans Serif", Font.BOLD, 28));
             
             // Main Menu Bar
-            JMenu fileItem, createItem, helpItem;
-            JMenuItem connectItem, disconnectItem, settingsItem, createvmItem, createctItem, quitItem, aboutItem;
+            JMenu fileItem, viewItem, createItem, helpItem;
+            JMenuItem connectItem, disconnectItem, settingsItem, createvmItem, createctItem, refreshItem, quitItem, aboutItem;
             JMenuBar mb = new JMenuBar();
 
             // File Menu
             fileItem = new JMenu("File");
+            viewItem = new JMenu("View");
             connectItem = new JMenuItem("Connect");
             disconnectItem = new JMenuItem("Disconnect");
             settingsItem = new JMenuItem("Settings");
@@ -52,6 +53,11 @@ public class Main {
             fileItem.add(settingsItem);
             fileItem.add(quitItem);
             mb.add(fileItem);
+
+            //View Menu
+            refreshItem = new JMenuItem("Refresh");
+            viewItem.add(refreshItem);
+            mb.add(viewItem);
 
             //Create Menu
             createItem = new JMenu("Create");
@@ -100,6 +106,7 @@ public class Main {
             // Confirmed via ChatGPT that for software that make frequent API requests, you can establish
             // a persistent connection.
             // TODO: Create class to handle API Connections
+
             connectItem.addActionListener(e -> {
                 new ConnectWdw();
             });
@@ -133,8 +140,10 @@ public class Main {
 
             //Panel 1: Node Status
             JPanel p1=new JPanel();
-            JLabel authorLabel = new JLabel("Server: This is where stupid server info will go!");
-            p1.add(authorLabel);
+            JTextArea p1ta = new JTextArea(apiclient.readData("/api2/json/nodes/"));
+            p1ta.setEditable(false);
+            p1ta.setBounds(0, 0, 100, 100);
+            p1.add(p1ta);
 
             //Panel 2: Main
             JTextArea ta=new JTextArea(200,200);
@@ -182,6 +191,7 @@ public class Main {
             mainFrame.add(jt);
             mainFrame.add(tp);
 
+            
             // Main Window Display
             Image icon = Toolkit.getDefaultToolkit().getImage("assets/images/ProxCtrlJ_logo.png");
             mainFrame.setIconImage(icon);
@@ -189,6 +199,7 @@ public class Main {
             mainFrame.setLocationRelativeTo(null);
             
             mainFrame.setVisible(true);
+            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
 }

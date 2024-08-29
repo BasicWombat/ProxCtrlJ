@@ -6,6 +6,8 @@ public class createVM extends JPanel {
     private JLabel titleLbl;
     private JLabel nodeLbl;
     private JComboBox nodeDrp;
+    private JLabel resLbl;
+    private JComboBox resDrp;
     private JLabel vmidLbl;
     private JTextField vmidTxt;
     private JLabel vmnameLbl;
@@ -45,11 +47,14 @@ public class createVM extends JPanel {
 
         //construct preComponents
         String[] nodeDrpItems = {"Item 1", "Item 2", "Item 3"};
+        String[] resDrpItems = {"Item 1", "Item 2", "Item 3"};
 
         //construct components
         titleLbl = new JLabel ("Create VM");
         nodeLbl = new JLabel ("Node");
         nodeDrp = new JComboBox (nodeDrpItems);
+        resLbl = new JLabel ("Node");
+        resDrp = new JComboBox (resDrpItems);
         vmidLbl = new JLabel ("VM ID");
         vmidTxt = new JTextField (5);
         vmnameLbl = new JLabel ("VM Name:");
@@ -57,11 +62,21 @@ public class createVM extends JPanel {
         startbootLbl = new JLabel ("Start at Boot");
         startbootBox = new JCheckBox ("");
 
+        // Row 0
+
         gbc.gridx = 0; // Column 0
         gbc.gridy = 0; // Row 0
         generalPnl.add(nodeLbl, gbc);
         gbc.gridx = 1; // Column 1
         generalPnl.add(nodeDrp, gbc);
+
+        gbc.gridx = 2; // Column 
+        gbc.gridy = 0; // Row 
+        generalPnl.add(resLbl, gbc);
+        gbc.gridx = 3; // Column 
+        generalPnl.add(resDrp, gbc);
+
+        // Row 1
 
         gbc.gridx = 0; // Column 0
         gbc.gridy = 1; // Row 1
@@ -69,12 +84,14 @@ public class createVM extends JPanel {
         gbc.gridx = 1; // Column 1
         generalPnl.add(vmidTxt, gbc);
 
-
         gbc.gridx = 2; // Column 
-        gbc.gridy = 0; // Row 
+        gbc.gridy = 1; // Row 
         generalPnl.add(vmnameLbl, gbc);
         gbc.gridx = 3; // Column 
         generalPnl.add(vmnameTxt, gbc);
+
+
+        // Row 2
 
         gbc.gridx = 2; // Column 
         gbc.gridy = 1; // Row 

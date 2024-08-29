@@ -21,11 +21,12 @@ public class SettingsWindow extends JFrame {
     private JTextField apiTokenIDFld;
     private JTextField hostprtFld;
     private JTextField hostaddrFld;
+    private JLabel nodeLbl;
+    private JTextField nodeFld;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(SettingsWindow::new);
     }
-
     public SettingsWindow() {
         setTitle("Settings");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -50,6 +51,10 @@ public class SettingsWindow extends JFrame {
         apiTokenIDFld = new JTextField (5);
         hostprtFld = new JTextField (5);
         hostaddrFld = new JTextField (5);
+        nodeLbl = new JLabel("Node Name:");
+        nodeFld = new JTextField(5);
+
+
 
         //add components
         add (headingLbl);
@@ -65,28 +70,41 @@ public class SettingsWindow extends JFrame {
         add (apiTokenIDFld);
         add (hostprtFld);
         add (hostaddrFld);
+        add (nodeFld);
+        add (nodeLbl);
 
         //set component bounds (only needed by Absolute Positioning)
         headingLbl.setBounds (35, 25, 100, 25);
+
         hostaddrLbl.setBounds (40, 75, 100, 25);
+        hostaddrFld.setBounds (135, 75, 195, 25);
+
         hostprtLbl.setBounds (40, 105, 100, 25);
+        hostprtFld.setBounds (135, 105, 195, 25);
+
         apiTokenIDLbl.setBounds (40, 135, 100, 25);
+        apiTokenIDFld.setBounds (135, 135, 195, 25);
+        
         apiSecretLbl.setBounds (40, 165, 100, 25);
         apiSecretFld.setBounds (135, 165, 195, 25);
+
+        nodeLbl.setBounds (40, 195, 100, 25);
+        nodeFld.setBounds (135, 195, 195, 25);
+
         saveBtn.setBounds (450, 335, 100, 25);
         clearBtn.setBounds (340, 335, 100, 25);
         propertiesTextArea.setBounds (370, 75, 185, 120);
         propertiesLbl.setBounds (370, 45, 100, 25);
-        apiTokenIDFld.setBounds (135, 135, 195, 25);
-        hostprtFld.setBounds (135, 105, 195, 25);
-        hostaddrFld.setBounds (135, 75, 195, 25);
+
+
+        
 
         // Load the properties file content into the text area
         loadSettingsFromFile();
 
         // Action listener for the save button
         saveBtn.addActionListener((ActionEvent e) -> {
-            saveSettingsToFile(hostaddrFld.getText(), hostprtFld.getText(), apiTokenIDFld.getText(), apiSecretFld.getText());
+            saveSettingsToFile(hostaddrFld.getText(), hostprtFld.getText(), apiTokenIDFld.getText(), apiSecretFld.getText(), nodeFld.getText());
             loadSettingsFromFile(); // Reload the properties file content after saving
         });
 
@@ -94,12 +112,13 @@ public class SettingsWindow extends JFrame {
         setVisible(true);
     }
 
-    private void saveSettingsToFile(String host, String hostport, String apiTokenID, String apiSecret) {
+    private void saveSettingsToFile(String host, String hostport, String apiTokenID, String apiSecret, String node) {
         Properties properties = new Properties();
         properties.setProperty("host", host);
         properties.setProperty("hostport", hostport);
         properties.setProperty("apiTokenID", apiTokenID);
         properties.setProperty("apiSecret", apiSecret);
+        properties.setProperty("node", node);
 
         try (FileOutputStream out = new FileOutputStream("settings.properties")) {
             properties.store(out, "User Settings");

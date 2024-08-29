@@ -31,4 +31,8 @@ public class ConfigManager {
     public static String getHostPort() {
         return properties.getProperty("hostport");
     }
+    
+    public static String getNode() {
+        return properties.getProperty("node");
+    }
 }

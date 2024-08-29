@@ -11,8 +11,6 @@ import java.io.InputStreamReader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
-
 public class ProxmoxTree {
 
     public DefaultTreeModel getProxmoxTreeModel() {
