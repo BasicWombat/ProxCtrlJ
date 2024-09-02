@@ -2,14 +2,15 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Properties;
+import java.util.prefs.Preferences;
+
+
 
 public class APIClient {
     private String host;
@@ -18,26 +19,38 @@ public class APIClient {
     private String apiSecret;
     private String node;
 
+
     public APIClient() {
         loadSettings();
     }
 
-    private void loadSettings() {
-        Properties properties = new Properties();
-        try (FileInputStream fis = new FileInputStream("settings.properties")) {
-            properties.load(fis);
-            host = properties.getProperty("host");
-            hostPort = properties.getProperty("hostport");
-            apiTokenID = properties.getProperty("apiTokenID");
-            apiSecret = properties.getProperty("apiSecret");
-            node = properties.getProperty("node");
+    // private void loadSettings() {
+    //     Properties properties = new Properties();
+    //     try (FileInputStream fis = new FileInputStream("settings.properties")) {
+    //         properties.load(fis);
+    //         host = properties.getProperty("host");
+    //         hostPort = properties.getProperty("hostport");
+    //         apiTokenID = properties.getProperty("apiTokenID");
+    //         apiSecret = properties.getProperty("apiSecret");
+    //         node = properties.getProperty("node");
 
-            if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
-                showErrorDialog("Missing API settings in settings.properties. The program will continue running, but some features may not work correctly.");
-            }
-        } catch (IOException e) {
-            showErrorDialog("Failed to load settings: " + e.getMessage());
-        }
+    //         if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
+    //             showErrorDialog("Missing API settings in settings.properties. The program will continue running, but some features may not work correctly.");
+    //         }
+    //     } catch (IOException e) {
+    //         showErrorDialog("Failed to load settings: " + e.getMessage());
+    //     }
+    // }
+
+    private void loadSettings() {
+        
+        // Get the user preferences node for this class
+        Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
+        host = usrprefs.get("host", null);
+        hostPort = usrprefs.get("hostport", null);
+        apiTokenID = usrprefs.get("apiTokenID", null);
+        apiSecret = usrprefs.get("apiSecret", null);
+        node = usrprefs.get("node", null);
     }
 
     private void showErrorDialog(String message) {

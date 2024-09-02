@@ -7,6 +7,7 @@ import javax.swing.tree.*;
 import java.io.*;
 import java.util.Properties;
 
+
 public class Main {  
     private Properties properties;
 
@@ -27,8 +28,8 @@ public class Main {
     public static void main(String[] args) {
             Main mainApp = new Main("app.properties");
             APIClient apiclient = new APIClient();
-            //APIClient client = new APIClient();
-            Main propSettings = new Main("settings.properties");
+            //Main propSettings = new Main("settings.properties");
+
 
             // Main Window Configuration
             JFrame mainFrame = new JFrame("ProxCtrlJ");
@@ -90,30 +91,22 @@ public class Main {
                         if (path != null) {
                             DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                             String nodeInfo = node.getUserObject().toString();
+                            System.out.println("Double-clicked node: " + nodeInfo);
                             
-                            // Open a new window when a node is double-clicked
-                            JFrame newWindow = new JFrame("New Window - " + nodeInfo);
-                            newWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                            newWindow.setSize(300, 200);
-                            newWindow.setVisible(true);
+                            // Open new window for node
+                            new vmNodeWdw(nodeInfo);
                         }
                     }
                 }
             });
 
-            // Connect Window
-            // This is probably a waste of time considering what I've learnt about the API connectivity :(
-            // Confirmed via ChatGPT that for software that make frequent API requests, you can establish
-            // a persistent connection.
-            // TODO: Create class to handle API Connections
-
             connectItem.addActionListener(e -> {
-                new ConnectWdw();
+                new connectWdw();
             });
 
             // Settings Window
             settingsItem.addActionListener(e -> {
-                new SettingsWindow();
+                new settingsWdw();
             });
 
             // About Window
@@ -122,11 +115,11 @@ public class Main {
             });
             
             createvmItem.addActionListener(e -> {
-                new createVM();
+                new createvmWdw();
             });
 
             createctItem.addActionListener(e -> {
-                new createCT();
+                new createctWdw();
             });
 
             disconnectItem.addActionListener(e -> {

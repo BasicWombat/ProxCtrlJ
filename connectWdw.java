@@ -9,12 +9,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class ConnectWdw extends JPanel {
+public class connectWdw extends JPanel {
     // Create a new JFrame for the Connect window
     JFrame connectWindow = new JFrame("Connect");
     Main mainSets = new Main("settings.properties");
     
-    ConnectWdw(){
+    connectWdw(){
         
         connectWindow.setSize(400, 250);
         connectWindow.setLocationRelativeTo(getParent());

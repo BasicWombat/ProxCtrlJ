@@ -2,7 +2,7 @@ import java.awt.*;
 import javax.swing.*;
 
 
-public class createVM extends JPanel {
+public class createvmWdw extends JPanel {
     private JLabel titleLbl;
     private JLabel nodeLbl;
     private JComboBox nodeDrp;
@@ -15,7 +15,7 @@ public class createVM extends JPanel {
     private JLabel startbootLbl;
     private JCheckBox startbootBox;
 
-    public createVM() {
+    public createvmWdw() {
 
         JFrame createvmWdw = new JFrame ("Create VM");
         //adjust size and set layout

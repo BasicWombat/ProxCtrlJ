@@ -11,7 +11,12 @@ import java.io.InputStreamReader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.prefs.Preferences;
+
 public class ProxmoxTree {
+
+        // Get the user preferences node for this class
+    Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
 
     public DefaultTreeModel getProxmoxTreeModel() {
         return fetchProxmoxTreeModel();
@@ -20,11 +25,10 @@ public class ProxmoxTree {
     private DefaultTreeModel fetchProxmoxTreeModel() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Proxmox Clusters");
         
-        String apiTokenID = ConfigManager.getApiTokenID();
-        String apiSecret = ConfigManager.getApiSecret();
-        String host = ConfigManager.getHost();
-        String hostPort = ConfigManager.getHostPort();
-        
+        String host = usrprefs.get("host", null);
+        String hostPort = usrprefs.get("hostport", null);
+        String apiTokenID = usrprefs.get("apiTokenID", null);
+        String apiSecret = usrprefs.get("apiSecret", null);      
         String authToken = apiTokenID + "=" + apiSecret;
         String urlString = "https://" + host + ":" + hostPort+ "/api2/json/nodes/";
 

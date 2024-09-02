@@ -2,7 +2,7 @@ import java.awt.*;
 import javax.swing.*;
 
 
-public class createCT extends JPanel {
+public class createctWdw extends JPanel {
     private JLabel titleLbl;
     private JLabel nodeLbl;
     private JComboBox nodeDrp;
@@ -13,7 +13,7 @@ public class createCT extends JPanel {
     private JLabel startbootLbl;
     private JCheckBox startbootBox;
 
-    public createCT() {
+    public createctWdw() {
 
         JFrame createctWdw = new JFrame ("Create CT");
         //adjust size and set layout
