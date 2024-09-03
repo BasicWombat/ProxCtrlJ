@@ -7,12 +7,19 @@ import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.prefs.Preferences;
 
 
 public class connectWdw extends JPanel {
     // Create a new JFrame for the Connect window
     JFrame connectWindow = new JFrame("Connect");
+    Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
     Main mainSets = new Main("settings.properties");
+    String host = usrprefs.get("host", null);
+    String hostPort = usrprefs.get("hostport", null);
+    String apiTokenID = usrprefs.get("apiTokenID", null);
+    String apiSecret = usrprefs.get("apiSecret", null);
+    String node = usrprefs.get("node", null);
     
     connectWdw(){
         
@@ -25,10 +32,10 @@ public class connectWdw extends JPanel {
         titleLabel.setBounds(20, 10, 200, 30);
         titleLabel.setFont(new Font("Sans Serif", Font.BOLD, 28));
 
-        JLabel hostLabel = new JLabel("Current Host: "+ ConfigManager.getHost()+":"+ConfigManager.getHostPort());
+        JLabel hostLabel = new JLabel("Current Host: "+ host +":"+hostPort);
         hostLabel.setBounds(20, 60, 300, 30);
         hostLabel.setToolTipText("Host Address can be changes in Settings");
-        JLabel nodeLabel = new JLabel("Current Node: "+ ConfigManager.getNode());
+        JLabel nodeLabel = new JLabel("Current Node: "+ node);
         nodeLabel.setBounds(20, 90, 300, 30);
         
         JButton connectBtn = new JButton("Connect");

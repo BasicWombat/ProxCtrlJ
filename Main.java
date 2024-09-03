@@ -6,10 +6,16 @@ import javax.swing.tree.*;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.prefs.Preferences;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 
 public class Main {  
     private Properties properties;
+    static Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
 
     public Main(String propertiesFilePath) {
         // Load properties
@@ -24,6 +30,70 @@ public class Main {
     public String getProperty(String key) {
         return properties.getProperty(key, "Not Found");
     }
+
+    static String nodeStatus(){
+        APIClient apiclient = new APIClient();
+        String response = apiclient.readData("/api2/json/nodes/");
+            // Convert JSON response to a string with new lines
+        String jsonString = response.toString();
+        String formattedString = jsonString.replace(",", ",\n");
+        System.out.println(formattedString);
+        return formattedString;
+    }
+
+    static String diskStatus(){
+        APIClient apiclient = new APIClient();
+        String nodeName = usrprefs.get("node", null);
+        String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/disks/list");
+            // Convert JSON response to a string with new lines
+        String jsonString = response.toString();
+        String formattedString = jsonString.replace(",", ",\n");
+        System.out.println(formattedString);
+        return formattedString;
+    }
+
+    static String networkStatus(){
+        APIClient apiclient = new APIClient();
+        String nodeName = usrprefs.get("node", null);
+        String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/network");
+            // Convert JSON response to a string with new lines
+        String jsonString = response.toString();
+        String formattedString = jsonString.replace(",", ",\n");
+        System.out.println(formattedString);
+        return formattedString;
+    }
+    static String storageStatus(){
+        APIClient apiclient = new APIClient();
+        String nodeName = usrprefs.get("node", null);
+        String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/storage");
+            // Convert JSON response to a string with new lines
+        String jsonString = response.toString();
+        String formattedString = jsonString.replace(",", ",\n");
+        System.out.println(formattedString);
+        return formattedString;
+    }
+
+    static String updateStatus(){
+        APIClient apiclient = new APIClient();
+        String nodeName = usrprefs.get("node", null);
+        String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/apt/update");
+            // Convert JSON response to a string with new lines
+        String jsonString = response.toString();
+        String formattedString = jsonString.replace(",", ",\n");
+        System.out.println(formattedString);
+        return formattedString;
+    }
+
+    static int updateCount(){
+        APIClient apiclient = new APIClient();
+        String nodeName = usrprefs.get("node", null);
+        String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/apt/update");
+        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
+        JsonArray jsonArray = jsonObject.getAsJsonArray("data"); // Assuming the JSON contains an array named "data"
+        int itemCount = jsonArray.size();
+        return itemCount;
+    }
+
 
     public static void main(String[] args) {
             Main mainApp = new Main("app.properties");
@@ -81,7 +151,7 @@ public class Main {
             ProxmoxTree proxmoxTree = new ProxmoxTree();
             DefaultTreeModel proxTree = proxmoxTree.getProxmoxTreeModel();  
             JTree jt=new JTree(proxTree);
-            jt.setBounds (5, 50, 240, 545);
+            jt.setBounds (10, 50, 240, 545);
             jt.setBorder(BorderFactory.createEtchedBorder());
                     // Add a mouse listener to handle double-clicks
             jt.addMouseListener(new MouseAdapter() {
@@ -133,49 +203,77 @@ public class Main {
 
             //Panel 1: Node Status
             JPanel p1=new JPanel();
-            JTextArea p1ta = new JTextArea(apiclient.readData("/api2/json/nodes/"));
+            p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
+            String p1data = nodeStatus();
+            JTextArea p1ta = new JTextArea(p1data);
             p1ta.setEditable(false);
             p1ta.setBounds(0, 0, 100, 100);
-            p1.add(p1ta);
+            JScrollPane p1sp = new JScrollPane(p1ta);
+            p1sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            p1sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            p1.add(p1sp);
 
-            //Panel 2: Main
-            JTextArea ta=new JTextArea(200,200);
+            //Panel 2: Disk
             JPanel p2=new JPanel();
-            p2.add(ta);
+            p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
+            String p2data = diskStatus();
+            JTextArea p2ta = new JTextArea(p2data);
+            p2ta.setEditable(false);
+            p2ta.setBounds(0, 0, 100, 100);
+            JScrollPane p2sp = new JScrollPane(p2ta);
+            p2sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            p2sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            p2.add(p2sp);
 
-            //Panel 3: Visit
+            //Panel 3: Network
             JPanel p3=new JPanel();
+            p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
+            String p3data = networkStatus();
+            JTextArea p3ta = new JTextArea(p3data);
+            p3ta.setEditable(false);
+            p3ta.setBounds(0, 0, 100, 100);
+            JScrollPane p3sp = new JScrollPane(p3ta);
+            p3sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            p3sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            p3.add(p3sp);
 
-            //Panel 4: Help
+
+            //Panel 4: Storage
             JPanel p4=new JPanel();
+            p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
+            String p4data = storageStatus();
+            JTextArea p4ta = new JTextArea(p4data);
+            p4ta.setEditable(false);
+            p4ta.setBounds(0, 0, 100, 100);
+            JScrollPane p4sp = new JScrollPane(p4ta);
+            p4sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            p4sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            p4.add(p4sp);
+
+            //Panel 5: Updates
+            JPanel p5=new JPanel();
+            p5.setLayout(new BoxLayout(p5, BoxLayout.Y_AXIS));
+            String p5data = updateStatus();
+            int updateCountTotal = updateCount();
+            JTextArea p5ta = new JTextArea(p5data);
+            JLabel updateCount = new JLabel("Update Count: " + updateCountTotal);
+            p5ta.setEditable(false);
+            p5ta.setBounds(0, 0, 100, 100);
+            JScrollPane p5sp = new JScrollPane(p5ta);
+            p5sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            p5sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            p5.add(updateCount);
+            p5.add(p5sp);
+
 
             // Tabs are here!
             JTabbedPane tp=new JTabbedPane();  
-            tp.setBounds(265,50,500,545);  
+            tp.setBounds(265,50,700,545);  
             tp.add("Node Status",p1);
-            tp.add("main",p2);  
-            tp.add("visit",p3);  
-            tp.add("help",p4);    
-
-            // Label Example
-            JLabel l1 = new JLabel("First Label.");
-            l1.setBounds(260, 50, 100, 30);
-            JLabel l2 = new JLabel("Second Label.");
-            l2.setBounds(260, 100, 100, 30);
-         
-
-            // Field Example
-            JTextField tf = new JTextField();
-            tf.setBounds(260, 150, 150, 20);
-
-            // Button Example
-            JButton b = new JButton("Click Here");
-            b.setBounds(260, 200, 95, 30);
-            b.addActionListener(e -> tf.setText("Welcome to Javatpoint."));
-
-            // Create a label to be used as a status bar
-            JLabel statusLabel = new JLabel(mainApp.getProperty("status.connectionStatus"));
-            statusLabel.setBorder(BorderFactory.createEtchedBorder());
+            tp.add("Disks",p2);  
+            tp.add("Network",p3);  
+            tp.add("Storage",p4);
+            tp.add("Updates", p5);
             
             // Main Window Objects
             mainFrame.setLayout(null);

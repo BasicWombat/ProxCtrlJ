@@ -24,6 +24,7 @@ public class createvmWdw extends JPanel {
         createvmWdw.setLocationRelativeTo(getParent());
         createvmWdw.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         createvmWdw.setLayout(null);
+        createvmWdw.setVisible (true);
         
         // Title Label
         JLabel titleLabel = new JLabel("Create VM");
@@ -133,10 +134,5 @@ public class createvmWdw extends JPanel {
         createvmWdw.add(tp);
         createvmWdw.add(createBtn);
 
-        createvmWdw.setDefaultCloseOperation (JFrame.DISPOSE_ON_CLOSE);
-        createvmWdw.setVisible (true);
-             
-    
-    
     }
 }
