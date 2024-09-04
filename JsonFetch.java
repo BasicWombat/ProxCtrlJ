@@ -3,33 +3,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
-public class JsonFetch extends JFrame {
+public class JsonFetch {
 
-    private String apiUrl;
     private JsonObject jsonData;
 
-    public JsonFetch(String apiUrl) {
-        this.apiUrl = apiUrl;
+    public JsonFetch(String jsonDataString) {
+        this.jsonData = JsonParser.parseString(jsonDataString).getAsJsonObject();
     }
 
-    public void fetchAndDisplayData(JTextArea textArea) {
-        new Thread(() -> {
-            try {
-                String jsonDataString = fetchDataFromApi();
-                jsonData = JsonParser.parseString(jsonDataString).getAsJsonObject();
-                String formattedData = formatJson(jsonData, 0);
-
-                SwingUtilities.invokeLater(() -> textArea.setText(formattedData));
-            } catch (Exception e) {
-                e.printStackTrace();
-                SwingUtilities.invokeLater(() -> textArea.setText("Error fetching data"));
-            }
-        }).start();
+    public void displayData(JTextArea textArea) {
+        String formattedData = formatJson(jsonData, 0);
+        SwingUtilities.invokeLater(() -> textArea.setText(formattedData));
     }
 
     public String getValueByKey(String key) {
@@ -38,6 +23,11 @@ public class JsonFetch extends JFrame {
         }
         return null;
     }
+
+    public JsonObject getJsonData() {
+        return this.jsonData;
+    }
+    
 
     public String getNestedValueByKey(String... keys) {
         JsonObject temp = jsonData;
@@ -51,24 +41,7 @@ public class JsonFetch extends JFrame {
         return temp != null && temp.has(keys[keys.length - 1]) ? temp.get(keys[keys.length - 1]).toString() : null;
     }
 
-    private String fetchDataFromApi() throws Exception {
-        URL url = new URL(apiUrl);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Accept", "application/json");
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line);
-        }
-        in.close();
-
-        return response.toString();
-    }
-
-    private String formatJson(JsonElement element, int indent) {
+    String formatJson(JsonElement element, int indent) {
         StringBuilder sb = new StringBuilder();
         String indentStr = " ".repeat(indent);
 
