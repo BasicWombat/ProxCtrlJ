@@ -13,6 +13,15 @@ ProxCtrlJ is a personal project aimed at creating a cross-platform Java applicat
 
 ![Screenshot of ProxCtrlJ v0.2.](/assets/images/ProxCtrlJ_02.png)
 
+## Libraries
+
+I'm using the following libraries in this application:
+
+- GSON
+- HTTPClient5
+- Jackson Core, Annotations, Databind
+- JSON
+
 ## Installation
 
 To run ProxCtrlJ, you will need to have the following prerequisites:
