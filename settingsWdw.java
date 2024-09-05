@@ -40,8 +40,6 @@ public class settingsWdw extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(getParent());
 
-
-
         //adjust size and set layout
         setSize(600, 400);
         setPreferredSize (new Dimension (580, 382));
@@ -101,6 +99,17 @@ public class settingsWdw extends JFrame {
         // Action listener for the save button
         saveBtn.addActionListener((ActionEvent e) -> {
             saveSettingsToFile(hostaddrFld.getText(), hostprtFld.getText(), apiTokenIDFld.getText(), apiSecretFld.getText(), nodeFld.getText());
+            JOptionPane.showMessageDialog(this, "Settings Saved!", "Settings", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        clearBtn.addActionListener((ActionEvent e) -> {
+            apiSecretFld.setText("");
+            apiTokenIDFld.setText("");
+            hostaddrFld.setText("");
+            hostprtFld.setText("");
+            nodeFld.setText("");
+            saveSettingsToFile(hostaddrFld.getText(), hostprtFld.getText(), apiTokenIDFld.getText(), apiSecretFld.getText(), nodeFld.getText());
+            JOptionPane.showMessageDialog(this, "Settings Cleared!", "Settings", JOptionPane.INFORMATION_MESSAGE);
         });
 
         // Display the window
@@ -114,7 +123,5 @@ public class settingsWdw extends JFrame {
         usrprefs.put("apiTokenID", apiTokenID);
         usrprefs.put("apiSecret", apiSecret);
         usrprefs.put("node", node);
-
-        JOptionPane.showMessageDialog(this, "Done!");
     }
 }

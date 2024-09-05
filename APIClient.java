@@ -24,26 +24,7 @@ public class APIClient {
         loadSettings();
     }
 
-    // private void loadSettings() {
-    //     Properties properties = new Properties();
-    //     try (FileInputStream fis = new FileInputStream("settings.properties")) {
-    //         properties.load(fis);
-    //         host = properties.getProperty("host");
-    //         hostPort = properties.getProperty("hostport");
-    //         apiTokenID = properties.getProperty("apiTokenID");
-    //         apiSecret = properties.getProperty("apiSecret");
-    //         node = properties.getProperty("node");
-
-    //         if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
-    //             showErrorDialog("Missing API settings in settings.properties. The program will continue running, but some features may not work correctly.");
-    //         }
-    //     } catch (IOException e) {
-    //         showErrorDialog("Failed to load settings: " + e.getMessage());
-    //     }
-    // }
-
     private void loadSettings() {
-        
         // Get the user preferences node for this class
         Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
         host = usrprefs.get("host", null);
@@ -71,15 +52,16 @@ public class APIClient {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
             return connection;
-        } catch (URISyntaxException e) {
-            showErrorDialog("Invalid URL syntax: " + e.getMessage());
-            throw new IOException("Invalid URL syntax: " + e.getMessage(), e);
+        } catch (URISyntaxException | IOException e) {
+            System.err.println("Failed to create connection: " + e.getMessage());
+            return null;
+            
         }
     }
 
     public String readData(String endpoint) {
         if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
-            showErrorDialog("API settings are missing. Cannot perform the request.");
+            System.err.println("API settings are missing. Cannot perform the request.");
             return null;
         }
 
@@ -90,17 +72,17 @@ public class APIClient {
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // Read the response from the input stream
-                System.out.println("Reading Data...");
+                
                 reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
-                    System.out.println(line);
+                    
                 }
                 return response.toString(); // Return the JSON response
             } else {
-                showErrorDialog("Failed to read data: HTTP error code " + responseCode);
+                System.err.println("Failed to read data: HTTP error code " + responseCode);
             }
         } catch (IOException e) {
             showErrorDialog("Failed to connect to Proxmox API: " + e.getMessage());
@@ -118,21 +100,22 @@ public class APIClient {
 
     public void writeData(String endpoint, String jsonPayload) {
         if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
-            showErrorDialog("API settings are missing. Cannot perform the request.");
-            return;
+            System.err.println("API settings are missing. Cannot perform the request.");
         }
-
-        try {
-            HttpURLConnection connection = createConnection(endpoint, "POST");
-            connection.getOutputStream().write(jsonPayload.getBytes());
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Code to handle successful write
-            } else {
-                showErrorDialog("Failed to write data: HTTP error code " + responseCode);
+        else {
+            // Continue with the request
+            try {
+                HttpURLConnection connection = createConnection(endpoint, "POST");
+                connection.getOutputStream().write(jsonPayload.getBytes());
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    // Code to handle successful write
+                } else {
+                    showErrorDialog("Failed to write data: HTTP error code " + responseCode);
+                }
+            } catch (IOException e) {
+                showErrorDialog("Failed to connect to Proxmox API: " + e.getMessage());
             }
-        } catch (IOException e) {
-            showErrorDialog("Failed to connect to Proxmox API: " + e.getMessage());
         }
     }
 

@@ -5,7 +5,7 @@ import javax.swing.*;
 public class createctWdw extends JPanel {
     private JLabel titleLbl;
     private JLabel nodeLbl;
-    private JComboBox nodeDrp;
+    private JComboBox<String> nodeDrp;
     private JLabel vmidLbl;
     private JTextField vmidTxt;
     private JLabel vmnameLbl;
@@ -43,7 +43,7 @@ public class createctWdw extends JPanel {
             //construct components
             titleLbl = new JLabel ("Create CT");
             nodeLbl = new JLabel ("Node");
-            nodeDrp = new JComboBox (nodeDrpItems);
+            nodeDrp = new JComboBox<String> (nodeDrpItems);
             vmidLbl = new JLabel ("VM ID");
             vmidTxt = new JTextField (5);
             vmnameLbl = new JLabel ("VM Name:");

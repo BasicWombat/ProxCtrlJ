@@ -16,15 +16,11 @@ import com.google.gson.JsonParser;
 import org.kordamp.ikonli.fluentui.FluentUiFilledMZ;
 import org.kordamp.ikonli.swing.FontIcon;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.category.DefaultCategoryDataset;
-
-
-public class Main {  
+public class Main {
+    
     private Properties properties;
     static Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
+    
 
     public Main(String propertiesFilePath) {
         // Load properties
@@ -47,38 +43,42 @@ public class Main {
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName +"/status");
         
         // Create an instance of ProxmoxDataFetcher with the JSON response
-        JsonFetch dataFetcher = new JsonFetch(response);
-            
-        // Example: Extracting specific values
-        String pveRelease = dataFetcher.getNestedValueByKey("data", "current-kernel", "release");
-        String cpuModel = dataFetcher.getNestedValueByKey("data", "cpuinfo", "model");
-        String cpuSockets = dataFetcher.getNestedValueByKey("data", "cpuinfo", "sockets");
-        String cpuCores = dataFetcher.getNestedValueByKey("data", "cpuinfo", "cores");
-        String bootMode = dataFetcher.getNestedValueByKey("data", "boot-info", "mode");
-        String uptime = dataFetcher.getNestedValueByKey("data","uptime");
+        if (response == null) {
+            System.err.println("Node Not Found.");
+            return "Node Not Found.";
+        } else {
+            JsonFetch dataFetcher = new JsonFetch(response);
 
-        // Convert uptime to days, hours, and minutes
-        long uptimeSeconds = Long.parseLong(uptime);
-        long days = uptimeSeconds / 86400; // 86400 seconds in a day
-        long hours = (uptimeSeconds % 86400) / 3600; // 3600 seconds in an hour
-        long minutes = (uptimeSeconds % 3600) / 60; // 60 seconds in a minute
+            String pveRelease = dataFetcher.getNestedValueByKey("data", "current-kernel", "release");
+            String cpuModel = dataFetcher.getNestedValueByKey("data", "cpuinfo", "model");
+            String cpuSockets = dataFetcher.getNestedValueByKey("data", "cpuinfo", "sockets");
+            String cpuCores = dataFetcher.getNestedValueByKey("data", "cpuinfo", "cores");
+            String bootMode = dataFetcher.getNestedValueByKey("data", "boot-info", "mode");
+            String uptime = dataFetcher.getNestedValueByKey("data","uptime");
 
-        // Example: Creating a formatted string with these values
-        StringBuilder result = new StringBuilder();
-        result.append("---------------\n");
-        result.append("PVE Release: ").append(pveRelease).append("\n");
-        result.append("---------------\n");
-        result.append("CPU Model: ").append(cpuModel).append("\n");
-        result.append("CPU Sockets: ").append(cpuSockets).append("\n");
-        result.append("CPU Cores: ").append(cpuCores).append("\n");
-        result.append("---------------\n");
-        result.append("Boot Mode: ").append(bootMode).append("\n");
-        result.append("Uptime: ").append(days).append(" days, ")
-           .append(hours).append(" hours, ")
-           .append(minutes).append(" minutes\n");
-        result.append("---------------\n");
+            // Convert uptime to days, hours, and minutes
+            long uptimeSeconds = Long.parseLong(uptime);
+            long days = uptimeSeconds / 86400; // 86400 seconds in a day
+            long hours = (uptimeSeconds % 86400) / 3600; // 3600 seconds in an hour
+            long minutes = (uptimeSeconds % 3600) / 60; // 60 seconds in a minute
 
-        return result.toString();
+            StringBuilder result = new StringBuilder();
+            result.append("---------------\n");
+            result.append("PVE Release: ").append(pveRelease).append("\n");
+            result.append("---------------\n");
+            result.append("CPU Model: ").append(cpuModel).append("\n");
+            result.append("CPU Sockets: ").append(cpuSockets).append("\n");
+            result.append("CPU Cores: ").append(cpuCores).append("\n");
+            result.append("---------------\n");
+            result.append("Boot Mode: ").append(bootMode).append("\n");
+            result.append("Uptime: ").append(days).append(" days, ")
+            .append(hours).append(" hours, ")
+            .append(minutes).append(" minutes\n");
+            result.append("---------------\n");
+
+            return result.toString();
+        }
+        
     }
 
         // Method to convert bytes to megabytes
@@ -90,6 +90,11 @@ public class Main {
         String nodeName = usrprefs.get("node", null);
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName +"/status");
         
+        if (response == null) {
+            System.err.println("Node Not Found.");
+            return "Node Not Found.";
+        } else {
+
         // Create an instance of ProxmoxDataFetcher with the JSON response
         JsonFetch dataFetcher = new JsonFetch(response);
         String ramTotal = dataFetcher.getNestedValueByKey("data", "memory", "total");
@@ -108,6 +113,7 @@ public class Main {
         result.append("RAM Used: ").append(String.format("%.2f MB", ramUsedMB)).append("\n");
 
         return result.toString();
+        }
     }
 
 
@@ -115,6 +121,11 @@ public class Main {
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/disks/list");
+
+        if (response == null) {
+            System.err.println("Node Not Found.");
+            return "Node Not Found.";
+        } else {
 
         JsonObject jsonData = JsonParser.parseString(response).getAsJsonObject();
         JsonArray disks = jsonData.getAsJsonArray("data");
@@ -143,12 +154,19 @@ public class Main {
         }
         
         return result.toString();
+        }
     }
 
     static String networkStatus(){
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/network");
+
+        if (response == null) {
+            System.err.println("Node Not Found.");
+            return "Node Not Found.";
+        } else {
+
         JsonObject jsonData = JsonParser.parseString(response).getAsJsonObject();
         JsonArray net = jsonData.getAsJsonArray("data");
         StringBuilder result = new StringBuilder();
@@ -179,10 +197,15 @@ public class Main {
         
         return result.toString();
     }
+    }
     static String storageStatus(){
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/storage");
+        if (response == null) {
+            System.err.println("Node Not Found.");
+            return "Node Not Found.";
+        } else {
         JsonObject jsonData = JsonParser.parseString(response).getAsJsonObject();
         JsonArray storage = jsonData.getAsJsonArray("data");
         StringBuilder result = new StringBuilder();
@@ -214,11 +237,16 @@ public class Main {
         
         return result.toString();
     }
+    }
 
     static String updateStatus(){
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/apt/update");
+        if (response == null) {
+            System.err.println("Node Not Found.");
+            return "Node Not Found.";
+        } else {
         JsonObject jsonData = JsonParser.parseString(response).getAsJsonObject();
         JsonArray update = jsonData.getAsJsonArray("data");
         StringBuilder result = new StringBuilder();
@@ -247,24 +275,43 @@ public class Main {
         
         return result.toString();
     }
+    }
 
     static int updateCount(){
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/apt/update");
+        if (response == null) {
+            System.err.println("Node Not Found.");
+            return 0;
+        } else {
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         JsonArray jsonArray = jsonObject.getAsJsonArray("data"); // Assuming the JSON contains an array named "data"
         int itemCount = jsonArray.size();
         return itemCount;
+        }
     }
 
 
     public static void main(String[] args) {
+
+       // Set the Windows theme
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("win")) {
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (Exception e) {
+            // Handle the exception
+        }
+    }
+
+
             // Main Window Configuration
             JFrame mainFrame = new JFrame("ProxCtrlJ");
             JLabel heading = new JLabel("ProxCtrlJ"); 
             heading.setBounds(50,10, 200,30);
             heading.setFont(new Font("Sans Serif", Font.BOLD, 28));
+
             
             // Main Menu Bar
             JMenu fileItem, viewItem, createItem, helpItem;
@@ -422,14 +469,14 @@ public class Main {
             String p5data = updateStatus();
             int updateCountTotal = updateCount();
             JTextArea p5ta = new JTextArea(p5data);
-            FontIcon updateIcon = new FontIcon();
-            updateIcon.setIkon(FluentUiFilledMZ.PHONE_UPDATE_24);
-            updateIcon.setIconSize(24);
-            if (updateCountTotal > 5) {
-                updateIcon.setIconColor(Color.RED);
-            }
+            // FontIcon updateIcon = new FontIcon();
+            // updateIcon.setIkon(FluentUiFilledMZ.PHONE_UPDATE_24);
+            // updateIcon.setIconSize(24);
+            // if (updateCountTotal > 5) {
+            //     updateIcon.setIconColor(Color.RED);
+            // }
             JLabel updateCount = new JLabel("Update Count: " + updateCountTotal);
-            updateCount.setIcon(updateIcon);
+            // updateCount.setIcon(updateIcon);
             p5ta.setEditable(false);
             p5ta.setBounds(0, 0, 100, 100);
             JScrollPane p5sp = new JScrollPane(p5ta);

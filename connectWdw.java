@@ -1,7 +1,6 @@
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import java.awt.*;
@@ -11,6 +10,12 @@ import java.util.prefs.Preferences;
 
 
 public class connectWdw extends JPanel {
+
+
+    private void restartMain() {
+        Main.main(null);          // Re-run the main method
+    }
+
     // Create a new JFrame for the Connect window
     JFrame connectWindow = new JFrame("Connect");
     Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
@@ -43,8 +48,7 @@ public class connectWdw extends JPanel {
         connectBtn.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Show a simple dialog when the button is clicked
-                JOptionPane.showMessageDialog(connectWindow, "Connect! (Maybe)", "Connect!", JOptionPane.INFORMATION_MESSAGE);
+                restartMain();
                 connectWindow.dispose();
             }
         });

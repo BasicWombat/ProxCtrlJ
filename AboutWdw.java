@@ -3,8 +3,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-
-
 public class AboutWdw extends Canvas{
     // Create a new JFrame for the About window
     JFrame AboutWdw = new JFrame("About");

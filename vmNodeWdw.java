@@ -1,14 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.prefs.Preferences;
 
 public class vmNodeWdw extends JFrame {
 
     public vmNodeWdw(String vmName) {
-        APIClient apiclient = new APIClient();
-        Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
         System.out.println("Opening new window for node: " + vmName);
-        String node = usrprefs.get("node", null);
         JFrame vmNodewindow = new JFrame();
         setTitle("Node Display");
 

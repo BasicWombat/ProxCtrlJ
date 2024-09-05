@@ -6,6 +6,7 @@ import javax.swing.tree.TreePath;
 import java.net.HttpURLConnection;
 import java.net.NoRouteToHostException;
 import java.net.URL;
+import java.net.URI;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import org.json.JSONArray;
@@ -33,10 +34,12 @@ public class ProxmoxTree {
         String urlString = "https://" + host + ":" + hostPort+ "/api2/json/nodes/";
 
         try {
-
-            HttpURLConnection conn = (HttpURLConnection) new URL(urlString).openConnection();
+            URI uri = new URI(urlString);
+            URL url = uri.toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Authorization", "PVEAPIToken=" + authToken);
+
 
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String inputLine;
@@ -57,7 +60,9 @@ public class ProxmoxTree {
                 // Get VMs for each node
                 String nodeName = node.getString("node");
                 String vmUrl = urlString + nodeName + "/qemu";
-                HttpURLConnection vmConn = (HttpURLConnection) new URL(vmUrl).openConnection();
+                URI uri2 = new URI(vmUrl);
+                URL url2 = uri2.toURL();
+                HttpURLConnection vmConn = (HttpURLConnection) url2.openConnection();
                 vmConn.setRequestMethod("GET");
                 vmConn.setRequestProperty("Authorization", "PVEAPIToken=" + authToken);
 
