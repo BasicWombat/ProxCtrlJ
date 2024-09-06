@@ -29,11 +29,6 @@ public class settingsWdw extends JFrame {
 
     // Get the user preferences node for this class
     Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
-
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(settingsWdw::new);
-    }
     
     public settingsWdw() {
         setTitle("Settings");
