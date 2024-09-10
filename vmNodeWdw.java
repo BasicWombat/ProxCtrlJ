@@ -20,7 +20,6 @@ public class vmNodeWdw extends JFrame {
         gbcNode.anchor = GridBagConstraints.NORTHWEST;
 
         JLabel vmnameLbl = new JLabel("VM Name: " + vmName);
-        // TODO: Get VM Status and Details from API
         JLabel vmstatusLbl = new JLabel("Status: ");
         JLabel uptimeLbl = new JLabel("Uptime: ");
         JLabel vmidLbl = new JLabel("VM ID:");

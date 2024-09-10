@@ -85,14 +85,14 @@ public class APIClient {
                 System.err.println("Failed to read data: HTTP error code " + responseCode);
             }
         } catch (IOException e) {
-            showErrorDialog("Failed to connect to Proxmox API: " + e.getMessage());
+            System.err.println("Failed to connect to Proxmox API: " + e.getMessage());
         } finally {
             // Ensure the reader and connection are closed properly
             try {
                 if (reader != null) reader.close();
                 if (connection != null) connection.disconnect();
             } catch (IOException e) {
-                showErrorDialog("Failed to close resources: " + e.getMessage());
+                System.err.println("Failed to close resources: " + e.getMessage());
             }
         }
         return null;

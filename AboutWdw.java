@@ -1,7 +1,5 @@
 import java.awt.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 public class AboutWdw extends Canvas{
     // Create a new JFrame for the About window
@@ -12,6 +10,19 @@ public class AboutWdw extends Canvas{
     AboutWdw.setLocationRelativeTo(getParent());
     AboutWdw.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     AboutWdw.setLayout(null);
+    Image icon = Toolkit.getDefaultToolkit().getImage("assets/images/Jabiru.png");
+    AboutWdw.setIconImage(icon);
+    
+    // Load and scale image to fit within the window size (adjusted for padding)
+        ImageIcon imgIcon = new ImageIcon("assets/images/Jabiru.png");
+        Image image = imgIcon.getImage();
+        Image scaledImage = image.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        ImageIcon scaledImgIcon = new ImageIcon(scaledImage);
+
+       // Add the scaled image to a JLabel
+        JLabel imageLabel = new JLabel(scaledImgIcon);
+        imageLabel.setBounds(350, 50, scaledImgIcon.getIconWidth(), scaledImgIcon.getIconHeight());
+        AboutWdw.add(imageLabel);
 
 
     // Add labels with property information

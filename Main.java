@@ -13,6 +13,7 @@ public class Main {
     private Properties properties;
     static Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
     
+    
 
     public Main(String propertiesFilePath) {
         // Load properties
@@ -277,7 +278,7 @@ public class Main {
             return 0;
         } else {
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-        JsonArray jsonArray = jsonObject.getAsJsonArray("data"); // Assuming the JSON contains an array named "data"
+        JsonArray jsonArray = jsonObject.getAsJsonArray("data");
         int itemCount = jsonArray.size();
         return itemCount;
         }
