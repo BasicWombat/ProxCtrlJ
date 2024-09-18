@@ -129,6 +129,26 @@ public class APIClient {
         showErrorDialog("Disconnected from Proxmox API.");
     }
 
+    public String getVmList() throws Exception {
+        String urlString = "https://" + host + ":" + hostPort + "/api2/json/nodes/" + node + "/qemu";
+        URI uri = new URI(urlString);
+        URL url = uri.toURL();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestProperty("Authorization", "PVEAPIToken=" + apiTokenID + "=" + apiSecret);
+        connection.setRequestMethod("GET");
+    
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = in.readLine()) != null) {
+            response.append(line);
+        }
+        in.close();
+    
+        return response.toString();
+    }
+
+    
     // Method to get VNC ticket and port
     public static JsonFetch getVncTicketAndPort(String vmid) throws Exception {
         String urlString = "https://" + host + ":" + hostPort + "/api2/json/nodes/" + node + "/qemu/" + vmid + "/vncproxy";

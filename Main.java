@@ -153,6 +153,8 @@ public class Main {
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/network");
+ 
+
 
         if (response == null) {
             System.err.println("Node Not Found.");

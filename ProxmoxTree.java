@@ -13,6 +13,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 public class ProxmoxTree {
@@ -64,9 +68,26 @@ public class ProxmoxTree {
                 vmIn.close();
                 JsonArray vmsArray = vmResponse.getAsJsonArray("data");
 
+                // Create a list to hold VMs for sorting
+                List<JsonObject> vmList = new ArrayList<>();
                 for (JsonElement vmElement : vmsArray) {
                     JsonObject vm = vmElement.getAsJsonObject();
-                    DefaultMutableTreeNode vmTreeNode = new DefaultMutableTreeNode(vm.get("name").getAsString());
+                    vmList.add(vm);
+                }
+
+                // Sort the VMs by VM ID (integer comparison)
+                Collections.sort(vmList, new Comparator<JsonObject>() {
+                    @Override
+                    public int compare(JsonObject vm1, JsonObject vm2) {
+                        return Integer.compare(vm1.get("vmid").getAsInt(), vm2.get("vmid").getAsInt());
+                    }
+                });
+
+                // Add sorted VMs to the node
+                for (JsonObject vm : vmList) {
+                    String vmID = vm.get("vmid").getAsString();
+                    String vmName = vm.get("name").getAsString();
+                    DefaultMutableTreeNode vmTreeNode = new DefaultMutableTreeNode("ID: " + vmID + " - Name: " + vmName);
                     nodeTreeNode.add(vmTreeNode);
                 }
 
@@ -74,13 +95,9 @@ public class ProxmoxTree {
             }
 
         } catch (NoRouteToHostException e) {
-            // Show an error dialog if there's no route to host
-            //JOptionPane.showMessageDialog(null, "Error: Cannot contact the server.\n" + e.getMessage(), "Network Error", JOptionPane.ERROR_MESSAGE);
             System.err.println("Error: Cannot contact the server.\n" + e.getMessage());
         } catch (Exception e) {
-            // Show a general error dialog for any other exceptions
             System.err.println("An unexpected error occurred: " + e.getMessage());
-            //JOptionPane.showMessageDialog(null, "An unexpected error occurred.\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return new DefaultTreeModel(root);

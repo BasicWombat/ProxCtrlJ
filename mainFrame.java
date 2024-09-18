@@ -73,7 +73,7 @@ public class mainFrame {
         JTree jt=new JTree(proxTree);
         jt.setBounds (10, 50, 240, 545);
         jt.setBorder(BorderFactory.createEtchedBorder());
-                // Add a mouse listener to handle double-clicks
+        // Add a mouse listener to handle double-clicks
         jt.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {  // Check for double-click
@@ -83,16 +83,31 @@ public class mainFrame {
                         String nodeInfo = node.getUserObject().toString();
                         System.out.println("Double-clicked node: " + nodeInfo);
                         
-                        // Open new window for node
-                        try {
-                            new vmNodeWdw(nodeInfo);
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
+                        // Extract VM/CT Name from the nodeInfo string
+                        String vmName = null;
+                        if (nodeInfo.contains(" - Name: ")) {
+                            int startIndex = nodeInfo.indexOf(" - Name: ") + 9; // Start after " - Name: "
+                            // If no trailing " (VM)" or " (CT)" exists, take the rest of the string as the name
+                            vmName = nodeInfo.substring(startIndex).trim();
+                        }
+        
+                        // If vmName was successfully extracted, open the window
+                        if (vmName != null) {
+                            try {
+                                new vmNodeWdw(vmName);  // Pass only the VM/CT Name
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        } else {
+                            System.out.println("Could not extract VM/CT Name from nodeInfo: " + nodeInfo);
                         }
                     }
                 }
             }
         });
+        
+                
+                
 
         connectItem.addActionListener(e -> {
             new connectWdw();
