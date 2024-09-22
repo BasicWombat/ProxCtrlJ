@@ -4,13 +4,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class VmDataFetcher {
-    private String response;
+    private static String response;
 
     public VmDataFetcher(String response) {
-        this.response = response;
+        VmDataFetcher.response = response;
     }
 
-    public String getVmId(String vmName) {
+    public static String getVmId(String vmName) {
         try {
             JsonObject jsonData = JsonParser.parseString(response).getAsJsonObject();
             JsonArray vmArray = jsonData.getAsJsonArray("data");
@@ -66,6 +66,35 @@ public class VmDataFetcher {
         }
     }
 
+    public static String getVmos(String vmName) {
+        try {
+            JsonObject jsonData = JsonParser.parseString(response).getAsJsonObject();
+            JsonArray vmArray = jsonData.getAsJsonArray("data");
+            System.out.println("Geting OS for Node: " + vmName);
+
+            // Iterate through the VM array
+            for (JsonElement vmElement : vmArray) {
+                JsonObject vmObject = vmElement.getAsJsonObject();
+
+                String vmNodeName = vmObject.has("name") ? vmObject.get("name").getAsString() : "N/A";
+                System.out.println("VM Name: " + vmNodeName);
+                
+                // Check if the node name matches
+                if (vmNodeName.equals(vmName)) {
+                    String vmOS = vmObject.has("pretty-name") ? vmObject.get("pretty-name").getAsString() : "N/A";
+                    System.out.println("VM OS: " + vmOS);
+                    return vmOS; // Return the VM OS when found
+                }
+            }
+            // Return a message or null if the VM was not found
+            return "VM OS not found";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error parsing JSON";
+        }
+    }
+
+
     public String getVmuptime(String vmName) {
         try {
             JsonObject jsonData = JsonParser.parseString(response).getAsJsonObject();
@@ -92,5 +121,10 @@ public class VmDataFetcher {
             e.printStackTrace();
             return "Error parsing JSON";
         }
+    }
+
+    public static void getVncTicketAndPort(String vmid) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getVncTicketAndPort'");
     }
 }

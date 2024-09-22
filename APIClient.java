@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.prefs.Preferences;
 
 
@@ -18,6 +19,7 @@ public class APIClient {
     private static String apiTokenID;
     private static String apiSecret;
     private static String node;
+
 
 
     public APIClient() {
@@ -129,25 +131,6 @@ public class APIClient {
         showErrorDialog("Disconnected from Proxmox API.");
     }
 
-    public String getVmList() throws Exception {
-        String urlString = "https://" + host + ":" + hostPort + "/api2/json/nodes/" + node + "/qemu";
-        URI uri = new URI(urlString);
-        URL url = uri.toURL();
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Authorization", "PVEAPIToken=" + apiTokenID + "=" + apiSecret);
-        connection.setRequestMethod("GET");
-    
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line);
-        }
-        in.close();
-    
-        return response.toString();
-    }
-
     
     // Method to get VNC ticket and port
     public static JsonFetch getVncTicketAndPort(String vmid) throws Exception {
@@ -171,7 +154,7 @@ public class APIClient {
     }
 
     // Method to get VNC WebSocket URL using the ticket and port
-    public static String getVNCWebSocketUrl(String vmid) throws Exception {
+    public static String getVNCWebSocketUrl(String vmid, String vmName) throws Exception {
         // First, retrieve the VNC ticket and port
         JsonFetch vncResponse = getVncTicketAndPort(vmid);
         String vncticket = vncResponse.getNestedValueByKey("data", "ticket");
@@ -185,9 +168,8 @@ public class APIClient {
             throw new Exception("VNC port is missing from the response");
         }
 
-        // Now use the ticket and port to build the WebSocket URL
-        String wsUrl = "wss://" + host + ":" + port + "/api2/json/nodes/" + node + "/qemu/" + vmid + "/vncwebsocket?port=" + port + "&vncticket=" + vncticket;
-        System.out.println("WebSocket URL: " + wsUrl);
-        return wsUrl;
+        String noVncUrl = "https://" + host + ":" + hostPort + "/?console=kvm&novnc=1&vmid=" + vmid + "&vmname=" + URLEncoder.encode(vmName, "UTF-8");
+        System.out.println(noVncUrl);
+        return noVncUrl;
     }
 }

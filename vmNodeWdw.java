@@ -1,14 +1,19 @@
 import javax.swing.*;
-
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.prefs.Preferences;
+import jiconfont.swing.IconFontSwing;
+import jiconfont.icons.font_awesome.FontAwesome;
+
 
 public class vmNodeWdw extends JFrame {
     Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
+    
 
     public vmNodeWdw(String vmName) throws Exception {
+
+        IconFontSwing.register(FontAwesome.getIconFont());
         System.out.println("Opening new window for node: " + vmName);
         JFrame vmNodewindow = new JFrame();
         vmNodewindow.setTitle("Node: " + vmName);
@@ -18,12 +23,28 @@ public class vmNodeWdw extends JFrame {
 
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
+        
+        // Getting VM ID Information
         String response = apiclient.readData("/api2/json/nodes/" + nodeName + "/qemu/");
         VmDataFetcher vmFetcher = new VmDataFetcher(response);
-        String vmID = vmFetcher.getVmId(vmName);
+
+        String vmID = VmDataFetcher.getVmId(vmName);
         String vmstatus = vmFetcher.getVmstatus(vmName);
         String vmuptime = vmFetcher.getVmuptime(vmName);
-        JButton launchButton = new JButton("Open VNC Console");
+        
+        // Getting VM OS Information
+        String vmosdataresponse = apiclient.readData("/api2/json/nodes/" + nodeName + "/qemu/" + vmID + "/agent/get-osinfo");
+        JsonFetch vmosdataFetcher = new JsonFetch(vmosdataresponse);
+        String vmos = vmosdataFetcher.getNestedValueByKey("data", "result", "pretty-name");
+        System.out.println("VM OS: " + vmos);
+
+        // Getting VM OS Type Information
+        String vmostypedataresponse = apiclient.readData("/api2/json/nodes/" + nodeName + "/qemu/" + vmID + "/config");
+        JsonFetch vmostypedataFetcher = new JsonFetch(vmostypedataresponse);
+        String vmostype = vmostypedataFetcher.getNestedValueByKey("data", "ostype");
+        System.out.println("VM OS Type: " + vmos);
+        
+
        
         // Convert uptime to days, hours, and minutes
         long uptimeSeconds = Long.parseLong(vmuptime);
@@ -41,11 +62,36 @@ public class vmNodeWdw extends JFrame {
         JLabel vmstatusSts = new JLabel(vmstatus);
         JLabel uptimeLbl = new JLabel("Uptime: "+ vmUptimeSB);
         JLabel vmidLbl = new JLabel("VM ID:" + vmID);
+        JLabel osLbl = new JLabel("OS: " + vmos);
+        JLabel osTypeLbl = new JLabel("OS Type: " + vmostype);
 
-        launchButton.addActionListener(new ActionListener() {
+        // Main Menu Bar
+        JMenu vmMenu;
+        JMenuItem startVM, stopVM, launchVNC;
+        JMenuBar vmMenuBar = new JMenuBar();
+
+        vmMenu = new JMenu("Control");
+        startVM = new JMenuItem("Start VM");
+        Icon startIcon = IconFontSwing.buildIcon(FontAwesome.PLAY_CIRCLE, 15);
+        startVM.setIcon(startIcon);
+        stopVM = new JMenuItem("Stop VM");
+        Icon stopIcon = IconFontSwing.buildIcon(FontAwesome.STOP_CIRCLE, 15);
+        stopVM.setIcon(stopIcon);
+        launchVNC = new JMenuItem("Launch VNC");
+        Icon vncIcon = IconFontSwing.buildIcon(FontAwesome.DESKTOP, 15);
+        launchVNC.setIcon(vncIcon);
+        vmMenu.add(startVM);
+        vmMenu.add(stopVM);
+        vmMenu.add(launchVNC);
+        vmMenuBar.add(vmMenu);
+
+        // Button Actions
+                
+
+        launchVNC.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!vmName.isEmpty()) {
+                if (!vmID.isEmpty()) {
                     VncConsoleOpener.openVncConsoleByName(vmName);
                 } else {
                     JOptionPane.showMessageDialog(vmNodewindow, "Please enter a VM name.", "Input Error", JOptionPane.WARNING_MESSAGE);
@@ -54,9 +100,78 @@ public class vmNodeWdw extends JFrame {
         });
 
 
-        vmnameLbl.setBounds(10, 10, 200, 30);
+        startVM.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!vmID.isEmpty()) {
+                    JOptionPane.showMessageDialog(vmNodewindow, "Launching VM...", "Launching VM", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(vmNodewindow, "Please enter a VM name.", "Input Error", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
 
-        // TODO: Need to separate the status from the label
+        stopVM.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!vmID.isEmpty()) {
+                    JOptionPane.showMessageDialog(vmNodewindow, "Stopping VM...", "Stopping VM", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(vmNodewindow, "Please enter a VM name.", "Input Error", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+
+        // Window Layout
+
+        // Set Icon based on OS
+        switch (vmostype) {
+            case "wxp":
+                
+                break;
+            case "w2k":
+                
+                break;
+            case "w2k3":
+                
+                break;
+            case "w2k8":
+                
+                break;
+            case "wvista":
+                
+                break;
+            case "w7":
+                
+                break;
+            case "w10":
+                
+                break;
+            case "w11":
+                
+                break;
+            case "l24":
+                
+                break;
+            case "l26":
+                
+                break;
+            case "solaris":
+                
+                break;
+            case "other":
+                
+                break;
+            default:
+                break;
+        }
+
+        Icon winIcon = IconFontSwing.buildIcon(FontAwesome.WINDOWS, 50);
+        JLabel winLbl = new JLabel(winIcon);
+        
+
+        vmnameLbl.setBounds(10, 10, 200, 30);
         vmstatusLbl.setBounds(10, 40, 200, 30);
         vmstatusSts.setBounds(60, 40, 200, 30);
         if (vmstatus.equals("running")) {
@@ -66,17 +181,24 @@ public class vmNodeWdw extends JFrame {
         }
         vmidLbl.setBounds(10, 70, 200, 30);
         uptimeLbl.setBounds(10, 100, 400, 30);
-        launchButton.setBounds(10, 130, 200, 30);
+        winLbl.setBounds(400, 10, 200, 200);
+        osLbl.setBounds(10, 130, 200, 30);
+        osTypeLbl.setBounds(10, 160, 200, 30);
         
+        
+       
         nodePnl.add(vmnameLbl);
         nodePnl.add(vmidLbl);      
         nodePnl.add(vmstatusLbl);
         nodePnl.add(vmstatusSts);
         nodePnl.add(uptimeLbl);
-        nodePnl.add(launchButton);
+        nodePnl.add(winLbl);
+        nodePnl.add(osLbl);
+        nodePnl.add(osTypeLbl);
 
+        vmNodewindow.setJMenuBar(vmMenuBar);
         vmNodewindow.add(nodePnl);
-        vmNodewindow.setSize(400, 500);
+        vmNodewindow.setSize(600, 400);
         vmNodewindow.setLocationRelativeTo(getParent());
         vmNodewindow.setVisible(true);
         vmNodewindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
