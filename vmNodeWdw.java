@@ -16,7 +16,7 @@ public class vmNodeWdw extends JFrame {
         IconFontSwing.register(FontAwesome.getIconFont());
         System.out.println("Opening new window for node: " + vmName);
         JFrame vmNodewindow = new JFrame();
-        vmNodewindow.setTitle("Node: " + vmName);
+        vmNodewindow.setTitle(vmName);
 
         JPanel nodePnl=new JPanel();
         nodePnl.setLayout(null); 
@@ -167,7 +167,7 @@ public class vmNodeWdw extends JFrame {
                 break;
         }
 
-        Icon winIcon = IconFontSwing.buildIcon(FontAwesome.WINDOWS, 50);
+        Icon winIcon = IconFontSwing.buildIcon(FontAwesome.DESKTOP, 50);
         JLabel winLbl = new JLabel(winIcon);
         
 
@@ -185,8 +185,6 @@ public class vmNodeWdw extends JFrame {
         osLbl.setBounds(10, 130, 200, 30);
         osTypeLbl.setBounds(10, 160, 200, 30);
         
-        
-       
         nodePnl.add(vmnameLbl);
         nodePnl.add(vmidLbl);      
         nodePnl.add(vmstatusLbl);

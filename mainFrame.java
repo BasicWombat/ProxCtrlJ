@@ -1,23 +1,17 @@
 import java.awt.event.*;
 import java.util.prefs.Preferences;
 import java.awt.*;
-
 import javax.swing.*;
 import javax.swing.tree.*;
+import jiconfont.swing.IconFontSwing;
+import jiconfont.icons.font_awesome.FontAwesome;
 
 public class mainFrame {
     static Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
+    
     JFrame mainFrame;
     mainFrame(){
-        // Set the Windows theme
-        String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.contains("win")) {
-            try {
-                UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            } catch (Exception e) {
-                // Handle the exception
-            }
-        }
+        IconFontSwing.register(FontAwesome.getIconFont());
 
         // Main Window Configuration
         mainFrame = new JFrame("ProxCtrlJ");
@@ -34,10 +28,25 @@ public class mainFrame {
         // File Menu
         fileItem = new JMenu("File");
         viewItem = new JMenu("View");
+
         connectItem = new JMenuItem("Connect");
+        Icon connectIcon = IconFontSwing.buildIcon(FontAwesome.PLUG, 15);
+        connectItem.setIcon(connectIcon);
+
         disconnectItem = new JMenuItem("Disconnect");
+        Icon disconnectIcon = IconFontSwing.buildIcon(FontAwesome.TIMES, 15);
+        disconnectItem.setIcon(disconnectIcon);
+
+
         settingsItem = new JMenuItem("Settings");
+        Icon settingsIcon = IconFontSwing.buildIcon(FontAwesome.COG, 15);
+        settingsItem.setIcon(settingsIcon);
+
         quitItem = new JMenuItem("Quit");
+        Icon quitIcon = IconFontSwing.buildIcon(FontAwesome.SIGN_OUT, 15);
+        quitItem.setIcon(quitIcon);
+
+
         fileItem.add(connectItem);
         fileItem.add(disconnectItem);
         fileItem.add(settingsItem);
@@ -60,6 +69,8 @@ public class mainFrame {
         //Help Menu
         helpItem = new JMenu("Help");
         aboutItem = new JMenuItem("About");
+        Icon aboutIcon = IconFontSwing.buildIcon(FontAwesome.INFO_CIRCLE, 15);
+        aboutItem.setIcon(aboutIcon);
         helpItem.add(aboutItem);
         mb.add(helpItem);
 
@@ -71,7 +82,7 @@ public class mainFrame {
         ProxmoxTree proxmoxTree = new ProxmoxTree();
         DefaultTreeModel proxTree = proxmoxTree.getProxmoxTreeModel(); 
         JTree jt=new JTree(proxTree);
-        jt.setBounds (10, 50, 240, 545);
+        jt.setBounds (10, 50, 300, 545);
         jt.setBorder(BorderFactory.createEtchedBorder());
         // Add a mouse listener to handle double-clicks
         jt.addMouseListener(new MouseAdapter() {
@@ -106,7 +117,16 @@ public class mainFrame {
             }
         });
         
-                
+        // EAST Panel
+
+        JPanel eastPanel = new JPanel();
+        
+
+        // SOUTH Panel
+
+        JPanel southPanel = new JPanel();
+        JLabel statusLbl = new JLabel("Status: ");
+        southPanel.add(statusLbl);
                 
 
         connectItem.addActionListener(e -> {
@@ -143,8 +163,8 @@ public class mainFrame {
         //Panel 1: Node Status
         JPanel p1=new JPanel();
         p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
-        String p1data = Main.nodeStatus();
-        String p1ram = Main.ramUsagedata();
+        String p1data = Status.nodeStatus();
+        String p1ram = Status.ramUsagedata();
         JTextArea p1ta = new JTextArea(p1data);
         JTextArea p1ta2 = new JTextArea(p1ram);
         p1ta.setEditable(false);
@@ -162,61 +182,41 @@ public class mainFrame {
         //Panel 2: Disk
         JPanel p2=new JPanel();
         p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
-        String p2data = Main.diskStatus();
-        JTextArea p2ta = new JTextArea(p2data);
-        p2ta.setEditable(false);
-        p2ta.setBounds(0, 0, 100, 100);
-        JScrollPane p2sp = new JScrollPane(p2ta);
-        p2sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p2sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        p2.add(p2sp);
+        p2.add(Status.diskStatus());
+        p2.revalidate(); // Revalidate to refresh the UI
+        p2.repaint(); // Repaint the panel to show the new content
 
         //Panel 3: Network
         JPanel p3=new JPanel();
         p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
-        String p3data = Main.networkStatus();
-        JTextArea p3ta = new JTextArea(p3data);
-        p3ta.setEditable(false);
-        p3ta.setBounds(0, 0, 100, 100);
-        JScrollPane p3sp = new JScrollPane(p3ta);
-        p3sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p3sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        p3.add(p3sp);
+        p3.add(Status.networkStatus());
 
 
         //Panel 4: Storage
         JPanel p4=new JPanel();
         p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
-        String p4data = Main.storageStatus();
-        JTextArea p4ta = new JTextArea(p4data);
-        p4ta.setEditable(false);
-        p4ta.setBounds(0, 0, 100, 100);
-        JScrollPane p4sp = new JScrollPane(p4ta);
-        p4sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p4sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        p4.add(p4sp);
+        p4.add(Status.storageStatus());
 
         //Panel 5: Updates
         JPanel p5=new JPanel();
         p5.setLayout(new BoxLayout(p5, BoxLayout.Y_AXIS));
-        String p5data = Main.updateStatus();
-        int updateCountTotal = Main.updateCount();
-        JTextArea p5ta = new JTextArea(p5data);
-        // FontIcon updateIcon = new FontIcon();
-        // updateIcon.setIkon(FluentUiFilledMZ.PHONE_UPDATE_24);
-        // updateIcon.setIconSize(24);
-        // if (updateCountTotal > 5) {
-        //     updateIcon.setIconColor(Color.RED);
+
+        int updateCnt = Status.updateCount();
+        String updateCntStr = Integer.toString(updateCnt);
+        JLabel updateCountLbl = new JLabel("Update Count: " + updateCntStr);
+        
+        // if (updateCnt > 5) {
+        //     Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.UPLOAD, 13, new Color(161, 22, 22));
+        //     updateCountLbl.setIcon(updateIcon);
+        //  }
+        // else {
+        //     Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.UPLOAD, 13);
+        //     updateCountLbl.setIcon(updateIcon);
         // }
-        JLabel updateCount = new JLabel("Update Count: " + updateCountTotal);
-        // updateCount.setIcon(updateIcon);
-        p5ta.setEditable(false);
-        p5ta.setBounds(0, 0, 100, 100);
-        JScrollPane p5sp = new JScrollPane(p5ta);
-        p5sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p5sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        p5.add(updateCount);
-        p5.add(p5sp);
+        Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.DOWNLOAD, 13);
+        updateCountLbl.setIcon(updateIcon);
+        p5.add(updateCountLbl);
+        p5.add(Status.updateStatus());
 
 
         // Tabs are here!
@@ -229,11 +229,13 @@ public class mainFrame {
         tp.add("Updates", p5);
         
         // Main Window Objects
-        mainFrame.setLayout(null);
-        mainFrame.add(heading);
+        mainFrame.setLayout(new BorderLayout(10, 10));
+        mainFrame.add(heading, BorderLayout.NORTH);
         
-        mainFrame.add(jt);
-        mainFrame.add(tp);
+        mainFrame.add(jt, BorderLayout.WEST);
+        mainFrame.add(tp, BorderLayout.CENTER);
+        mainFrame.add(eastPanel, BorderLayout.EAST);
+        mainFrame.add(southPanel, BorderLayout.SOUTH);
 
         
         // Main Window Display

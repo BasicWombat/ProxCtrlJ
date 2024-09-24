@@ -7,6 +7,10 @@ macOS/Linux: In XML files under a directory such as ~/.java/.userPrefs.
 
 
 import javax.swing.*;
+
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.prefs.Preferences;
@@ -26,6 +30,7 @@ public class settingsWdw extends JFrame {
     private JTextField hostaddrFld;
     private JLabel nodeLbl;
     private JTextField nodeFld;
+    private JLabel seticonLbl;
 
     // Get the user preferences node for this class
     Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
@@ -42,6 +47,7 @@ public class settingsWdw extends JFrame {
 
         //construct components
         headingLbl = new JLabel ("Settings");
+        headingLbl.setFont(new Font("Sans Serif", Font.BOLD, 28));
         hostaddrLbl = new JLabel ("Host Address:");
         hostprtLbl = new JLabel ("Host Port:");
         apiTokenIDLbl = new JLabel ("API Token ID:");
@@ -54,6 +60,9 @@ public class settingsWdw extends JFrame {
         hostaddrFld = new JTextField (usrprefs.get("host",null));
         nodeLbl = new JLabel("Node Name:");
         nodeFld = new JTextField(usrprefs.get("node", null));
+
+        Icon settingIcon = IconFontSwing.buildIcon(FontAwesome.COGS, 50);
+        seticonLbl = new JLabel(settingIcon);
 
         //add components
         add (headingLbl);
@@ -69,9 +78,11 @@ public class settingsWdw extends JFrame {
         add (hostaddrFld);
         add (nodeFld);
         add (nodeLbl);
+        add (seticonLbl);
 
         //set component bounds (only needed by Absolute Positioning)
-        headingLbl.setBounds (35, 25, 100, 25);
+        headingLbl.setBounds (35, 25, 200, 30);
+        seticonLbl.setBounds(400, 10, 200, 200);
 
         hostaddrLbl.setBounds (40, 75, 100, 25);
         hostaddrFld.setBounds (135, 75, 195, 25);
