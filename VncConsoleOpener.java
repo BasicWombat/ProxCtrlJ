@@ -1,9 +1,11 @@
 import java.awt.Desktop;
 import java.net.URI;
+import java.net.URLEncoder;
+
 import javax.swing.JOptionPane;
 
 public class VncConsoleOpener {
-    public static void openVncConsoleByName(String vmName) {
+    public static void openVncConsoleByName(String host, String hostPort, String node, String vmName) {
         try {
             // Get VM ID by name
             String vmid = VmDataFetcher.getVmId(vmName);
@@ -13,14 +15,38 @@ public class VncConsoleOpener {
                 return;
             }
 
+            if (host == null) {
+                JOptionPane.showMessageDialog(null, "Host Name is Null!", "Error", JOptionPane.ERROR_MESSAGE);
+                System.err.println("Host Name is Null!");
+                return;
+            }
+            if (hostPort == null) {
+                JOptionPane.showMessageDialog(null, "Host Port is Null!", "Error", JOptionPane.ERROR_MESSAGE);
+                System.err.println("Host Port is Null!");
+                return;
+            }
+            if (node == null) {
+                JOptionPane.showMessageDialog(null, "Node is Null!", "Error", JOptionPane.ERROR_MESSAGE);
+                System.err.println("Node is Null!");
+                return;
+            }
+
             // Fetch VNC ticket and port
             APIClient.getVncTicketAndPort(vmid);
-            String noVncUrl = APIClient.getVNCWebSocketUrl(vmid, vmName);
-            System.out.println("NoVNC URL: " + noVncUrl);
+            JsonFetch vncResponse = APIClient.getVncTicketAndPort(vmid);
+            String vncticket = vncResponse.getNestedValueByKey("data", "ticket").replace("\"", "");
+            String vncport = vncResponse.getNestedValueByKey("data", "port").replace("\"", "");
 
-            // Construct the VNC console URL
-            //String noVncUrl = "https://" + host + ":" + hostPort + "/?console=kvm&novnc=1&vmid=" + vmid + "&vmname=" + URLEncoder.encode(vmName, "UTF-8");
+            // Construct the VNC console URL with ticket and port
+            String noVncUrl = "https://" + host + ":" + hostPort + "/?console=kvm&novnc=1&vmid=" + vmid +
+                  "&path=websockify&port=" + vncport +
+                  "&password=" + URLEncoder.encode(vncticket, "UTF-8") +
+                  "&encrypt=1";
 
+            
+                    // Debug output to check the URL
+            System.out.println("noVNC URL: " + noVncUrl);
+            
             // Open URL in default browser
             Desktop.getDesktop().browse(new URI(noVncUrl));
 

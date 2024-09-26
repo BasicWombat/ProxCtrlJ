@@ -14,7 +14,7 @@ public class vmNodeWdw extends JFrame {
     public vmNodeWdw(String vmName) throws Exception {
 
         IconFontSwing.register(FontAwesome.getIconFont());
-        System.out.println("Opening new window for node: " + vmName);
+        System.out.println("vmNodeWdw - Opening new window for node: " + vmName);
         JFrame vmNodewindow = new JFrame();
         vmNodewindow.setTitle(vmName);
 
@@ -44,8 +44,6 @@ public class vmNodeWdw extends JFrame {
         String vmostype = vmostypedataFetcher.getNestedValueByKey("data", "ostype");
         System.out.println("VM OS Type: " + vmos);
         
-
-       
         // Convert uptime to days, hours, and minutes
         long uptimeSeconds = Long.parseLong(vmuptime);
         long days = uptimeSeconds / 86400; // 86400 seconds in a day
@@ -85,6 +83,15 @@ public class vmNodeWdw extends JFrame {
         vmMenu.add(launchVNC);
         vmMenuBar.add(vmMenu);
 
+        // Toolbar
+
+        JToolBar toolbar = new JToolBar();
+        toolbar.setRollover(true);
+        toolbar.add(new JButton("Start"));
+        toolbar.add(new JButton("Stop"));
+        toolbar.add(new JButton("Restart"));
+
+
         // Button Actions
                 
 
@@ -92,7 +99,9 @@ public class vmNodeWdw extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!vmID.isEmpty()) {
-                    VncConsoleOpener.openVncConsoleByName(vmName);
+                    String host = usrprefs.get("host", null);
+                    String port = usrprefs.get("hostport", null);
+                    VncConsoleOpener.openVncConsoleByName(host, port, nodeName, vmName);
                 } else {
                     JOptionPane.showMessageDialog(vmNodewindow, "Please enter a VM name.", "Input Error", JOptionPane.WARNING_MESSAGE);
                 }
@@ -129,7 +138,7 @@ public class vmNodeWdw extends JFrame {
         switch (vmostype) {
             case "wxp":
                 
-                break;
+                return;
             case "w2k":
                 
                 break;
@@ -195,6 +204,7 @@ public class vmNodeWdw extends JFrame {
         nodePnl.add(osTypeLbl);
 
         vmNodewindow.setJMenuBar(vmMenuBar);
+        vmNodewindow.add(toolbar);
         vmNodewindow.add(nodePnl);
         vmNodewindow.setSize(600, 400);
         vmNodewindow.setLocationRelativeTo(getParent());

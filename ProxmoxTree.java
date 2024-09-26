@@ -88,7 +88,7 @@ public class ProxmoxTree {
                 for (JsonObject vm : vmList) {
                     String vmID = vm.get("vmid").getAsString();
                     String vmName = vm.get("name").getAsString();
-                    DefaultMutableTreeNode vmTreeNode = new DefaultMutableTreeNode("ID: " + vmID + " - Name: " + vmName);
+                    DefaultMutableTreeNode vmTreeNode = new DefaultMutableTreeNode(vmID + " - " + vmName);
                     nodeTreeNode.add(vmTreeNode);
                 }
 

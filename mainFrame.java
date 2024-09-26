@@ -96,25 +96,31 @@ public class mainFrame {
                         
                         // Extract VM/CT Name from the nodeInfo string
                         String vmName = null;
-                        if (nodeInfo.contains(" - Name: ")) {
-                            int startIndex = nodeInfo.indexOf(" - Name: ") + 9; // Start after " - Name: "
-                            // If no trailing " (VM)" or " (CT)" exists, take the rest of the string as the name
-                            vmName = nodeInfo.substring(startIndex).trim();
+                        int dashIndex = nodeInfo.lastIndexOf(" - "); // Find the last occurrence of " - "
+                        if (dashIndex != -1) {
+                            // Extract name after the last " - "
+                            vmName = nodeInfo.substring(dashIndex + 3).trim(); // Start after " - "
+                        } else {
+                            // If there's no " - ", take the entire string as the name
+                            vmName = nodeInfo.trim();
                         }
-        
+            
                         // If vmName was successfully extracted, open the window
-                        if (vmName != null) {
+                        if (vmName != null && !vmName.isEmpty()) {
                             try {
+                                // Opening vmNodeWdw for Node
                                 new vmNodeWdw(vmName);  // Pass only the VM/CT Name
                             } catch (Exception e1) {
                                 e1.printStackTrace();
                             }
                         } else {
+                            JOptionPane.showMessageDialog(mainFrame, "Could not extract VM/CT Name from nodeInfo: " + nodeInfo, "Alert", JOptionPane.WARNING_MESSAGE);     
                             System.out.println("Could not extract VM/CT Name from nodeInfo: " + nodeInfo);
                         }
                     }
                 }
             }
+            
         });
         
         // EAST Panel
