@@ -1,3 +1,12 @@
+/** 
+* ProxCtrlJ
+* Desktop Application Client for Proxmox VE
+*
+* @author: https://github.com/BasicWombat
+* @since: 2023-08-15
+* @license: MIT
+*/
+
 import java.io.*;
 import java.util.Properties;
 import java.util.prefs.Preferences;
@@ -20,17 +29,38 @@ public class Main {
 
     }
 
+    
+    /** 
+     * @param key
+     * @return String
+     */
     public String getProperty(String key) {
+      
+      /** 
+       * @param key
+       * @param args
+       */
         return properties.getProperty(key, "Not Found");
     }
 
     public static void main(String[] args) {
+        /** 
+        * Makes the application look and feel FlatArcOrangeIJTheme
+        */
+
+        /** 
+        * Sets the main application theme to FlatArcOrangeIJTheme
+        */
         try {
             UIManager.setLookAndFeel( new FlatArcOrangeIJTheme() );
         } catch( Exception ex ) {
             System.err.println( "Failed to initialize LaF" );
         }
 
+
+        /** 
+        * Runs the application
+        */
         new mainFrame();
         
     }

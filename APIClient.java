@@ -36,6 +36,10 @@ public class APIClient {
         node = usrprefs.get("node", null);
     }
 
+    
+    /** 
+     * @param message
+     */
     private void showErrorDialog(String message) {
         JOptionPane optionPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
         JDialog dialog = optionPane.createDialog("Error");
@@ -43,6 +47,13 @@ public class APIClient {
         dialog.setVisible(true);
     }
 
+    
+    /** 
+     * @param endpoint
+     * @param method
+     * @return HttpURLConnection
+     * @throws IOException
+     */
     HttpURLConnection createConnection(String endpoint, String method) throws IOException {
         try {
             String urlString = "https://" + host + ":" + hostPort + endpoint;
@@ -61,6 +72,11 @@ public class APIClient {
         }
     }
 
+    
+    /** 
+     * @param endpoint
+     * @return String
+     */
     public String readData(String endpoint) {
         if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
             System.err.println("API settings are missing. Cannot perform the request.");
@@ -100,6 +116,11 @@ public class APIClient {
         return null;
     }
 
+    
+    /** 
+     * @param endpoint
+     * @param jsonPayload
+     */
     public void writeData(String endpoint, String jsonPayload) {
         if (host == null || hostPort == null || apiTokenID == null || apiSecret == null || node == null) {
             System.err.println("API settings are missing. Cannot perform the request.");
@@ -132,6 +153,12 @@ public class APIClient {
     }
 
     
+    
+    /** 
+     * @param vmid
+     * @return JsonFetch
+     * @throws Exception
+     */
     // Method to get VNC ticket and port
     public static JsonFetch getVncTicketAndPort(String vmid) throws Exception {
         String urlString = "https://" + host + ":" + hostPort + "/api2/json/nodes/" + node + "/qemu/" + vmid + "/vncproxy";

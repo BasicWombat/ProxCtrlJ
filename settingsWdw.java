@@ -1,8 +1,9 @@
-/*On different operating systems, the preferences are stored in different locations:
-
-Windows: In the Windows registry under HKEY_CURRENT_USER\Software\JavaSoft\Prefs.
-macOS/Linux: In XML files under a directory such as ~/.java/.userPrefs.
-
+/**
+ * Settings Window
+ * On different operating systems, the preferences are stored in different locations:
+*
+* Windows: In the Windows registry under HKEY_CURRENT_USER\Software\JavaSoft\Prefs.
+* macOS/Linux: In XML files under a directory such as ~/.java/.userPrefs.
 */
 
 

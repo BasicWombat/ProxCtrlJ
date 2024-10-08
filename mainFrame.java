@@ -1,3 +1,8 @@
+/** 
+* The Main Window for the ProxCtrlJ Application.
+* This is where everything starts from.
+*/
+
 import java.awt.event.*;
 import java.util.prefs.Preferences;
 import java.awt.*;
@@ -9,18 +14,25 @@ import jiconfont.icons.font_awesome.FontAwesome;
 public class mainFrame {
     static Preferences usrprefs = Preferences.userNodeForPackage(Main.class);
     
+    /**
+     * Main Window Method
+     */
     JFrame mainFrame;
     mainFrame(){
         IconFontSwing.register(FontAwesome.getIconFont());
 
-        // Main Window Configuration
+        /**
+         * Main Window Configuration
+         */
         mainFrame = new JFrame("ProxCtrlJ");
         JLabel heading = new JLabel("ProxCtrlJ"); 
         heading.setBounds(50,10, 200,30);
         heading.setFont(new Font("Sans Serif", Font.BOLD, 28));
 
         
-        // Main Menu Bar
+        /**
+         * Main Menu Bar
+         */ 
         JMenu fileItem, viewItem, createItem, helpItem;
         JMenuItem connectItem, disconnectItem, settingsItem, createvmItem, createctItem, refreshItem, quitItem, aboutItem;
         JMenuBar mb = new JMenuBar();
