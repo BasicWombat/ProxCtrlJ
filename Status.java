@@ -2,6 +2,9 @@ import java.awt.GridLayout;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 import javax.swing.JLabel;
@@ -9,7 +12,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -344,6 +351,35 @@ public class Status {
             // Create JTable with the model and wrap it in a scroll pane
             JTable updateTable = new JTable(tableModel);
             updateTable.setDefaultEditor(Object.class, null);
+            // Allows the user to sort the columns of the table
+            //updateTable.setAutoCreateRowSorter(true);
+            TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(updateTable.getModel());
+            updateTable.setRowSorter(sorter);
+
+            // Define a custom comparator for column 1
+            sorter.setComparator(1, new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    // Define the custom ranking order
+                    List<String> order = List.of("required", "important", "standard", "optional");
+
+                    // Get the index for each string
+                    int index1 = order.indexOf(o1);
+                    int index2 = order.indexOf(o2);
+
+                    // If the value is not in the list, assign a high index
+                    index1 = (index1 == -1) ? Integer.MAX_VALUE : index1;
+                    index2 = (index2 == -1) ? Integer.MAX_VALUE : index2;
+
+                    return Integer.compare(index1, index2);
+                }
+            });
+
+            // Define default sort keys (column 1 with the custom comparator)
+            List<RowSorter.SortKey> sortKeys = List.of(
+                new RowSorter.SortKey(1, SortOrder.ASCENDING) // Column 1 with ascending order
+            );
+            sorter.setSortKeys(sortKeys);
             return new JScrollPane(updateTable); // Return the scroll pane containing the table
         }
     }
