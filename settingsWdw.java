@@ -6,7 +6,6 @@
 * macOS/Linux: In XML files under a directory such as ~/.java/.userPrefs.
 */
 
-
 import javax.swing.*;
 
 import jiconfont.icons.font_awesome.FontAwesome;

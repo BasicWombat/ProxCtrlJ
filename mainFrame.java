@@ -33,8 +33,8 @@ public class mainFrame {
         /**
          * Main Menu Bar
          */ 
-        JMenu fileItem, viewItem, createItem, helpItem;
-        JMenuItem connectItem, disconnectItem, settingsItem, createvmItem, createctItem, refreshItem, quitItem, aboutItem;
+        JMenu fileItem, nodeItem, viewItem, createItem, helpItem;
+        JMenuItem connectItem, disconnectItem, settingsItem, createvmItem, createctItem, refreshItem, quitItem, aboutItem, shutdownItem, restartItem, consoleItem;
         JMenuBar mb = new JMenuBar();
 
         // File Menu
@@ -64,6 +64,16 @@ public class mainFrame {
         fileItem.add(settingsItem);
         fileItem.add(quitItem);
         mb.add(fileItem);
+
+        // Node Menu
+        nodeItem = new JMenu("Node");
+        shutdownItem = new JMenuItem("Shutdown");
+        restartItem = new JMenuItem("Restart");
+        consoleItem = new JMenuItem("Console");
+        nodeItem.add(shutdownItem);
+        nodeItem.add(restartItem);
+        nodeItem.add(consoleItem);
+        mb.add(nodeItem);
 
         //View Menu
         refreshItem = new JMenuItem("Refresh");
@@ -136,15 +146,14 @@ public class mainFrame {
         });
         
         // EAST Panel
-
         JPanel eastPanel = new JPanel();
-        
 
         // SOUTH Panel
-
         JPanel southPanel = new JPanel();
-        JLabel statusLbl = new JLabel("Status: ");
+        JLabel statusLbl = new JLabel("Ready");
         southPanel.add(statusLbl);
+        southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.X_AXIS));
+        southPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
                 
 
         connectItem.addActionListener(e -> {
@@ -178,23 +187,56 @@ public class mainFrame {
 
         //Tab Area
 
-        //Panel 1: Node Status
-        JPanel p1=new JPanel();
-        p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
-        String p1data = Status.nodeStatus();
-        String p1ram = Status.ramUsagedata();
-        JTextArea p1ta = new JTextArea(p1data);
-        JTextArea p1ta2 = new JTextArea(p1ram);
-        p1ta.setEditable(false);
-        p1ta.setBounds(0, 0, 100, 100);
-        JScrollPane p1sp = new JScrollPane(p1ta);
-        p1sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p1sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        JScrollPane p1sp2 = new JScrollPane(p1ta2);
-        p1sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p1sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        p1.add(p1sp);
-        p1.add(p1sp2);
+        //Panel 1: Node Summary
+        JPanel p1a = new JPanel();
+        p1a.setLayout(new BoxLayout(p1a, BoxLayout.Y_AXIS));
+        APIClient apiclient = new APIClient();
+        String nodeName = usrprefs.get("node", null);
+        String response = apiclient.readData("/api2/json/nodes/"+ nodeName +"/status");
+        
+        if (response == null) {
+            System.err.println("Node Not Found.");
+        } else {
+            JsonFetch dataFetcher = new JsonFetch(response);
+
+            String pveRelease = dataFetcher.getNestedValueByKey("data", "current-kernel", "release");
+            String cpuModel = dataFetcher.getNestedValueByKey("data", "cpuinfo", "model");
+            String cpuSockets = dataFetcher.getNestedValueByKey("data", "cpuinfo", "sockets");
+            String cpuCores = dataFetcher.getNestedValueByKey("data", "cpuinfo", "cores");
+            String bootMode = dataFetcher.getNestedValueByKey("data", "boot-info", "mode");
+            String uptime = dataFetcher.getNestedValueByKey("data","uptime");
+            int updateCnt = Status.updateCount();
+            String updateCntStr = Integer.toString(updateCnt);
+            String ramTotal = dataFetcher.getNestedValueByKey("data", "memory", "total");
+            String ramUsed = dataFetcher.getNestedValueByKey("data", "memory", "used");
+            
+            // Convert uptime to days, hours, and minutes
+            long uptimeSeconds = Long.parseLong(uptime);
+            long days = uptimeSeconds / 86400; // 86400 seconds in a day
+            long hours = (uptimeSeconds % 86400) / 3600; // 3600 seconds in an hour
+            long minutes = (uptimeSeconds % 3600) / 60; // 60 seconds in a minute
+
+            JLabel pveLabel, cpuModelLbl, cpuSocketsLbl, cpuCoresLbl, ramLabel, bootModeLabel, uptimeLabel, updateCntLabel;
+
+            pveLabel = new JLabel("PVE Release: " + pveRelease);
+            cpuModelLbl = new JLabel("CPU Model: " + cpuModel);
+            cpuSocketsLbl = new JLabel("CPU Sockets: " + cpuSockets);
+            cpuCoresLbl = new JLabel("CPU Cores: " + cpuCores);
+            ramLabel = new JLabel("RAM Usage: " + ramUsed + " / " + ramTotal);
+            bootModeLabel = new JLabel("Boot Mode: " + bootMode);
+            uptimeLabel = new JLabel("Uptime: " + days + " days, " + hours + " hours, " + minutes + " minutes");
+            updateCntLabel = new JLabel("Update Count: " + updateCntStr);
+            
+
+            p1a.add(pveLabel);
+            p1a.add(cpuModelLbl);
+            p1a.add(cpuSocketsLbl);
+            p1a.add(cpuCoresLbl);
+            p1a.add(ramLabel);
+            p1a.add(bootModeLabel);
+            p1a.add(uptimeLabel);
+            p1a.add(updateCntLabel);
+        }
 
 
         //Panel 2: Disk
@@ -217,11 +259,18 @@ public class mainFrame {
 
         //Panel 5: Updates
         JPanel p5=new JPanel();
+        JPanel p5a=new JPanel();
+        JPanel p5b=new JPanel();
         p5.setLayout(new BoxLayout(p5, BoxLayout.Y_AXIS));
+        p5a.setLayout(new BoxLayout(p5a, BoxLayout.X_AXIS));
+        p5a.setAlignmentX(Component.LEFT_ALIGNMENT);
+        p5b.setLayout(new BoxLayout(p5b, BoxLayout.Y_AXIS));
 
         int updateCnt = Status.updateCount();
         String updateCntStr = Integer.toString(updateCnt);
         JLabel updateCountLbl = new JLabel("Update Count: " + updateCntStr);
+        JButton updrefreshBtn = new JButton("Refresh");
+        JButton updateBtn = new JButton("Update");
         
         // if (updateCnt > 5) {
         //     Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.UPLOAD, 13, new Color(161, 22, 22));
@@ -233,14 +282,29 @@ public class mainFrame {
         // }
         Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.DOWNLOAD, 13);
         updateCountLbl.setIcon(updateIcon);
-        p5.add(updateCountLbl);
-        p5.add(Status.updateStatus());
+        p5a.add(updateCountLbl);
+        p5a.add(updrefreshBtn);
+        p5a.add(updateBtn);
+        
+        //Add Table of Updates
+        p5b.add(Status.updateStatus());
+
+        p5.add(p5a);
+        p5.add(p5b);
+
+        updrefreshBtn.addActionListener(e -> {
+            JOptionPane.showMessageDialog(mainFrame,"Updates Refreshed!");  
+        });
+
+        updateBtn.addActionListener(e -> {
+            JOptionPane.showMessageDialog(mainFrame,"Updates Applied!");  
+        });
 
 
         // Tabs are here!
         JTabbedPane tp=new JTabbedPane();  
-        tp.setBounds(265,50,700,545);  
-        tp.add("Node Status",p1);
+        tp.setBounds(265,50,700,545);
+        tp.add("Node Summary", p1a);
         tp.add("Disks",p2);  
         tp.add("Network",p3);  
         tp.add("Storage",p4);

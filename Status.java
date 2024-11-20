@@ -133,16 +133,15 @@ public class Status {
         
     }
 
-    
-
     // Method to convert bytes to megabytes
     public static double bytesToMegabytes(long bytes) {
         return bytes / 1_048_576.0; // 1 MB = 1,048,576 bytes
     }
 
-    // RAM Usage Data
+
 
     static String ramUsagedata(){
+        // RAM Usage Data
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName +"/status");
@@ -157,7 +156,7 @@ public class Status {
         String ramTotal = dataFetcher.getNestedValueByKey("data", "memory", "total");
         String ramUsed = dataFetcher.getNestedValueByKey("data", "memory", "used");
 
-            // Convert memory values from bytes to megabytes
+        // Convert memory values from bytes to megabytes
         long ramTotalBytes = Long.parseLong(ramTotal);
         long ramUsedBytes = Long.parseLong(ramUsed);
         
@@ -168,7 +167,6 @@ public class Status {
         StringBuilder result = new StringBuilder();
         result.append("RAM Total: ").append(String.format("%.2f MB", ramTotalMB)).append("\n");
         result.append("RAM Used: ").append(String.format("%.2f MB", ramUsedMB)).append("\n");
-
         return result.toString();
         }
     }
@@ -211,11 +209,12 @@ public class Status {
         
         // Create JTable with the model and wrap it in a scroll pane
         JTable diskTable = new JTable(tableModel);
+        diskTable.setDefaultEditor(Object.class, null);
         return new JScrollPane(diskTable); // Return the scroll pane containing the table
     }
 }
 
-static JScrollPane networkStatus(){
+    static JScrollPane networkStatus(){
     APIClient apiclient = new APIClient();
     String nodeName = usrprefs.get("node", null);
     String response = apiclient.readData("/api2/json/nodes/"+ nodeName + "/network");
@@ -254,6 +253,7 @@ static JScrollPane networkStatus(){
 
         // Create JTable with the model and wrap it in a scroll pane
         JTable networkTable = new JTable(tableModel);
+        networkTable.setDefaultEditor(Object.class, null);
         return new JScrollPane(networkTable); // Return the scroll pane containing the table
     }
 
@@ -299,6 +299,7 @@ static JScrollPane networkStatus(){
     
             // Create JTable with the model and wrap it in a scroll pane
             JTable storageTable = new JTable(tableModel);
+            storageTable.setDefaultEditor(Object.class, null);
             return new JScrollPane(storageTable); // Return the scroll pane containing the table
         }
     }
@@ -342,6 +343,7 @@ static JScrollPane networkStatus(){
     
             // Create JTable with the model and wrap it in a scroll pane
             JTable updateTable = new JTable(tableModel);
+            updateTable.setDefaultEditor(Object.class, null);
             return new JScrollPane(updateTable); // Return the scroll pane containing the table
         }
     }
