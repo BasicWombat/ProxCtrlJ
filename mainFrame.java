@@ -300,6 +300,23 @@ public class mainFrame {
             JOptionPane.showMessageDialog(mainFrame,"Updates Applied!");  
         });
 
+        //Panel 6: System Log
+        JPanel p6=new JPanel();
+        p6.setLayout(new BoxLayout(p6, BoxLayout.Y_AXIS));
+        String response_log = apiclient.readData("/api2/json/nodes/"+ nodeName +"/syslog");
+        
+        if (response == null) {
+            System.err.println("Node Not Found.");
+        } else {
+            
+            JsonFetch dataFetcher_log = new JsonFetch(response_log);
+            String syslogData = dataFetcher_log.getNestedValueByKey("data");
+            JTextArea p6ta = new JTextArea(syslogData);
+            p6ta.setEditable(false);
+            p6ta.setLineWrap(true);
+            p6.add(p6ta);
+        }
+
 
         // Tabs are here!
         JTabbedPane tp=new JTabbedPane();  
@@ -309,6 +326,7 @@ public class mainFrame {
         tp.add("Network",p3);  
         tp.add("Storage",p4);
         tp.add("Updates", p5);
+        tp.add("System Log", p6);
         
         // Main Window Objects
         mainFrame.setLayout(new BorderLayout(10, 10));
