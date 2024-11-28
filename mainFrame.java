@@ -193,6 +193,9 @@ public class mainFrame {
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
         String response = apiclient.readData("/api2/json/nodes/"+ nodeName +"/status");
+
+        
+      
         
         if (response == null) {
             System.err.println("Node Not Found.");
@@ -272,16 +275,15 @@ public class mainFrame {
         JButton updrefreshBtn = new JButton("Refresh");
         JButton updateBtn = new JButton("Update");
         
-        // if (updateCnt > 5) {
-        //     Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.UPLOAD, 13, new Color(161, 22, 22));
-        //     updateCountLbl.setIcon(updateIcon);
-        //  }
-        // else {
-        //     Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.UPLOAD, 13);
-        //     updateCountLbl.setIcon(updateIcon);
-        // }
-        Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.DOWNLOAD, 13);
-        updateCountLbl.setIcon(updateIcon);
+        if (updateCnt > 5) {
+            Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.DOWNLOAD, 13, new Color(161, 22, 22));
+            updateCountLbl.setIcon(updateIcon);
+        }
+         else {
+            Icon updateIcon = IconFontSwing.buildIcon(FontAwesome.DOWNLOAD, 13);
+            updateCountLbl.setIcon(updateIcon);
+        }
+
         p5a.add(updateCountLbl);
         p5a.add(updrefreshBtn);
         p5a.add(updateBtn);
@@ -293,11 +295,13 @@ public class mainFrame {
         p5.add(p5b);
 
         updrefreshBtn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(mainFrame,"Updates Refreshed!");  
+            JOptionPane.showMessageDialog(mainFrame,"Updates Refreshed!");
+            //updates.java will have the functions for this button
         });
 
         updateBtn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(mainFrame,"Updates Applied!");  
+            JOptionPane.showMessageDialog(mainFrame,"Updates Applied!");
+            //updates.java will have the functions for this button
         });
 
         //Panel 6: System Log
