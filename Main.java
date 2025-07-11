@@ -10,6 +10,8 @@
 import java.io.*;
 import java.util.Properties;
 import java.util.prefs.Preferences;
+
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import com.formdev.flatlaf.intellijthemes.FlatArcOrangeIJTheme;
 
@@ -57,11 +59,16 @@ public class Main {
             System.err.println( "Failed to initialize LaF" );
         }
 
+        // Show splash screen first
+        SplashScreen splash = new SplashScreen();
+        splash.showSplash(2000); // Show for 2 seconds
 
         /** 
         * Runs the application
         */
-        new mainFrame();
+        SwingUtilities.invokeLater(() -> {
+            new mainFrame(); // Initialize the main frame
+        });
         
     }
 

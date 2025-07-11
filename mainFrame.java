@@ -147,6 +147,7 @@ public class mainFrame {
         
         // EAST Panel
         JPanel eastPanel = new JPanel();
+        
 
         // SOUTH Panel
         JPanel southPanel = new JPanel();
@@ -296,29 +297,31 @@ public class mainFrame {
 
         updrefreshBtn.addActionListener(e -> {
             JOptionPane.showMessageDialog(mainFrame,"Updates Refreshed!");
-            //updates.java will have the functions for this button
+            //TODO: updates.java will have the functions for this button
         });
 
         updateBtn.addActionListener(e -> {
             JOptionPane.showMessageDialog(mainFrame,"Updates Applied!");
-            //updates.java will have the functions for this button
+            //TODO: updates.java will have the functions for this button
         });
 
         //Panel 6: System Log
+
         JPanel p6=new JPanel();
+        JPanel p6a=new JPanel();
         p6.setLayout(new BoxLayout(p6, BoxLayout.Y_AXIS));
-        String response_log = apiclient.readData("/api2/json/nodes/"+ nodeName +"/syslog");
+        p6a.setLayout(new BoxLayout(p6a, BoxLayout.X_AXIS));
+        p6a.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        
+        
         
         if (response == null) {
             System.err.println("Node Not Found.");
         } else {
             
-            JsonFetch dataFetcher_log = new JsonFetch(response_log);
-            String syslogData = dataFetcher_log.getNestedValueByKey("data");
-            JTextArea p6ta = new JTextArea(syslogData);
-            p6ta.setEditable(false);
-            p6ta.setLineWrap(true);
-            p6.add(p6ta);
+            p6a.add(Status.systemLogTable());
+            p6.add(p6a);
         }
 
 

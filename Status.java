@@ -383,6 +383,10 @@ public class Status {
         }
     }
 
+    /** 
+     * Returns the number of updates available for the node.
+     * If the node is not found, it returns 0.
+     */
     static int updateCount(){
         APIClient apiclient = new APIClient();
         String nodeName = usrprefs.get("node", null);
@@ -397,4 +401,49 @@ public class Status {
         return itemCount;
         }
     }
+
+    /** 
+     * Returns a JScrollPane containing the system log table.
+     * The table displays log entries with line numbers and text.
+     * If the node is not found, it returns a label indicating the error.
+     */
+    static JScrollPane systemLogTable() {
+    APIClient apiclient = new APIClient();
+    String nodeName = usrprefs.get("node", null);
+    String response = apiclient.readData("/api2/json/nodes/" + nodeName + "/syslog");
+
+    if (response == null) {
+            System.err.println("Node Not Found.");
+            return new JScrollPane(new JLabel("Node Not Found."));
+        } else {
+            JsonObject jsonData = JsonParser.parseString(response).getAsJsonObject();
+            JsonArray logArray = jsonData.getAsJsonArray("data");
+
+            // Define column headers
+            String[] columnNames = {"Line Number", "Log Entry"};
+
+            // Create table model
+            DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+
+            // Populate the table model from the JSON array
+            for (JsonElement logElement : logArray) {
+                JsonObject logEntry = logElement.getAsJsonObject();
+
+                String lineNumber = logEntry.has("n") ? String.valueOf(logEntry.get("n").getAsInt()) : "";
+                String logText = logEntry.has("t") ? logEntry.get("t").getAsString() : "";
+
+                Object[] rowData = {lineNumber, logText};
+                tableModel.addRow(rowData);
+            }
+
+            // Create and configure JTable
+            JTable logTable = new JTable(tableModel);
+            logTable.setDefaultEditor(Object.class, null); // Make it read-only
+            logTable.getColumnModel().getColumn(0); // Optional: Narrow "Line Number" column
+            
+
+            return new JScrollPane(logTable);
+        }
+    }
+
 }
