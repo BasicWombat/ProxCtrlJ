@@ -306,19 +306,19 @@ public class mainFrame {
         p5.add(p5b);
 
         updrefreshBtn.addActionListener(e -> {
-              
+
             if (apiclient.triggerUpdateCheck()) {
-            JOptionPane.showMessageDialog(mainFrame, "Update check triggered successfully.");
+                JOptionPane.showMessageDialog(mainFrame, "Update check triggered successfully.");
 
-            // Optionally, wait a moment and refresh the JTable or panel with latest data
-            try { Thread.sleep(1000); } catch (InterruptedException ex) {}
-            String updatedData = apiclient.readData("/api2/json/nodes/" + usrprefs.get("node", null) + "/apt/update");
+                // Optionally, wait a moment and refresh the JTable or panel with latest data
+                try { Thread.sleep(1000); } catch (InterruptedException ex) {}
+                String updatedData = apiclient.readData("/api2/json/nodes/" + usrprefs.get("node", null) + "/apt/update");
+                
 
-            // Pass updatedData to your JTable update logic
-            // e.g., tableModel.setDataVector(...), or rebuild the scroll pane
-    } else {
-        JOptionPane.showMessageDialog(mainFrame, "Failed to trigger update check.");
-    }
+            } else {
+                JOptionPane.showMessageDialog(mainFrame, "Failed to trigger update check.");
+            }
+            
         });
 
         updateBtn.addActionListener(e -> {

@@ -104,4 +104,21 @@ public class JsonFetch {
 
         return sb.toString();
     }
+
+    /**
+     * Checks whether the update check is completed by evaluating "data.status".
+     * @return true if status is "done", false otherwise.
+     */
+    public boolean isUpdateCheckDone() {
+        if (jsonData != null && jsonData.has("data")) {
+            JsonObject dataObj = jsonData.getAsJsonObject("data");
+            if (dataObj.has("status")) {
+                String status = dataObj.get("status").getAsString();
+                return "done".equalsIgnoreCase(status);
+            }
+        }
+        return false;
+    }
+
+  
 }

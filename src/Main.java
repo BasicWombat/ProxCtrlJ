@@ -73,4 +73,30 @@ public class Main {
         
     }
 
+    public boolean waitForUpdateToComplete(APIClient apiclient, int timeoutMillis) {
+    String endpoint = "/api2/json/nodes/" + Preferences.userNodeForPackage(Main.class).get("node", null) + "/apt/update";
+    int elapsed = 0;
+    int interval = 1000; // 1 second
+
+    while (elapsed < timeoutMillis) {
+        String response = apiclient.readData(endpoint);
+        if (response != null) {
+            JsonFetch checker = new JsonFetch(response);
+            if (checker.isUpdateCheckDone()) {
+                return true;
+            }
+        }
+
+        try {
+            Thread.sleep(interval);
+        } catch (InterruptedException e) {
+            break;
+        }
+        elapsed += interval;
+    }
+
+    return false;
+}
+
+
 }

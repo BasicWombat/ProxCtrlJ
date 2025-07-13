@@ -203,4 +203,27 @@ public class APIClient {
         System.out.println(noVncUrl);
         return noVncUrl;
     }
+
+    public boolean triggerUpdateCheck() {
+    if (node == null) {
+        System.err.println("Node not set in preferences.");
+        return false;
+    }
+
+    String endpoint = "/api2/json/nodes/" + node + "/apt/update";
+    String payload = "{}"; // Empty JSON payload required by the API
+
+    String response = postData(endpoint, payload);
+    if (response != null) {
+        System.out.println("Successfully triggered update check: " + response);
+        return true;
+    } else {
+        System.err.println("Failed to trigger update check.");
+        return false;
+    }
+}
+
+    
+
+
 }
