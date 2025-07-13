@@ -1,3 +1,4 @@
+package src;
 /* This while class is a work in progress.
 It's supposed to be a set of functions for checking for updates, and then performing them on the host. */
 
@@ -16,6 +17,7 @@ public class updates {
     APIClient apiclient = new APIClient();
     String nodeName = usrprefs.get("node", null);
     String response = apiclient.readData("/api2/json/nodes/"+ nodeName +"/status");
+    
     public void getUpdates(){
         String endpoint = "/api2/json/nodes/" + node + "/apt/update";
         String jsonPayload = "{\"upgrade\": false}";  // Example payload

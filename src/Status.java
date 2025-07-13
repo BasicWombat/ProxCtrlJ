@@ -1,3 +1,4 @@
+package src;
 import java.awt.GridLayout;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -95,49 +96,6 @@ public class Status {
         add(valueLabel);
     }
 }
-
-    static String nodeStatus(){
-        APIClient apiclient = new APIClient();
-        String nodeName = usrprefs.get("node", null);
-        String response = apiclient.readData("/api2/json/nodes/"+ nodeName +"/status");
-        
-        if (response == null) {
-            System.err.println("Node Not Found.");
-            return "Node Not Found.";
-        } else {
-            JsonFetch dataFetcher = new JsonFetch(response);
-
-            String pveRelease = dataFetcher.getNestedValueByKey("data", "current-kernel", "release");
-            String cpuModel = dataFetcher.getNestedValueByKey("data", "cpuinfo", "model");
-            String cpuSockets = dataFetcher.getNestedValueByKey("data", "cpuinfo", "sockets");
-            String cpuCores = dataFetcher.getNestedValueByKey("data", "cpuinfo", "cores");
-            String bootMode = dataFetcher.getNestedValueByKey("data", "boot-info", "mode");
-            String uptime = dataFetcher.getNestedValueByKey("data","uptime");
-            int updateCnt = updateCount();
-            String updateCntStr = Integer.toString(updateCnt);
-            
-            // Convert uptime to days, hours, and minutes
-            long uptimeSeconds = Long.parseLong(uptime);
-            long days = uptimeSeconds / 86400; // 86400 seconds in a day
-            long hours = (uptimeSeconds % 86400) / 3600; // 3600 seconds in an hour
-            long minutes = (uptimeSeconds % 3600) / 60; // 60 seconds in a minute
-
-            StringBuilder result = new StringBuilder();
-            result.append("PVE Release: ").append(pveRelease).append("\n");
-            result.append("---------------\n");
-            result.append("CPU Model: ").append(cpuModel).append("\n");
-            result.append("CPU Sockets: ").append(cpuSockets).append("\n");
-            result.append("CPU Cores: ").append(cpuCores).append("\n");
-            result.append("---------------\n");
-            result.append("Boot Mode: ").append(bootMode).append("\n");
-            result.append("Uptime: ").append(days).append(" days, ").append(hours).append(" hours, ").append(minutes).append(" minutes\n");
-            result.append("Update Count: " ).append(updateCntStr).append("\n");
-            result.append("---------------\n");
-
-            return result.toString();
-        }
-        
-    }
 
     // Method to convert bytes to megabytes
     public static double bytesToMegabytes(long bytes) {

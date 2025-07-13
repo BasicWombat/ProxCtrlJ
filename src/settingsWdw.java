@@ -1,3 +1,4 @@
+package src;
 /**
  * Settings Window
  * On different operating systems, the preferences are stored in different locations:

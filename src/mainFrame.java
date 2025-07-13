@@ -1,3 +1,4 @@
+package src;
 /** 
 * The Main Window for the ProxCtrlJ Application.
 * This is where everything starts from.
@@ -148,11 +149,20 @@ public class mainFrame {
         // EAST Panel
         JPanel eastPanel = new JPanel();
         
-
         // SOUTH Panel
         JPanel southPanel = new JPanel();
-        JLabel statusLbl = new JLabel("Ready");
-        southPanel.add(statusLbl);
+        
+        if (usrprefs.get("host", null) == null || usrprefs.get("hostport", null) == null) {
+            JOptionPane.showMessageDialog(mainFrame, "Please configure host in Settings before proceeding.", "Host Settings Required", JOptionPane.WARNING_MESSAGE);
+            JLabel statusLbl = new JLabel("Host and Port not set.");
+            southPanel.add(statusLbl);
+        } else {
+            JLabel statusLbl = new JLabel("Ready");
+            southPanel.add(statusLbl);
+            
+            
+        }
+        
         southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.X_AXIS));
         southPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
                 
@@ -296,8 +306,19 @@ public class mainFrame {
         p5.add(p5b);
 
         updrefreshBtn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(mainFrame,"Updates Refreshed!");
-            //TODO: updates.java will have the functions for this button
+              
+            if (apiclient.triggerUpdateCheck()) {
+            JOptionPane.showMessageDialog(mainFrame, "Update check triggered successfully.");
+
+            // Optionally, wait a moment and refresh the JTable or panel with latest data
+            try { Thread.sleep(1000); } catch (InterruptedException ex) {}
+            String updatedData = apiclient.readData("/api2/json/nodes/" + usrprefs.get("node", null) + "/apt/update");
+
+            // Pass updatedData to your JTable update logic
+            // e.g., tableModel.setDataVector(...), or rebuild the scroll pane
+    } else {
+        JOptionPane.showMessageDialog(mainFrame, "Failed to trigger update check.");
+    }
         });
 
         updateBtn.addActionListener(e -> {
